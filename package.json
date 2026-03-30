@@ -1,0 +1,17 @@
+{
+ "name": "cfdi-sync",
+ "version": "1.0.0",
+ "description": "",
+ "keywords": [],
+ "license": "ISC",
+ "scripts": {
+  "build:frontend": "npm run build --workspace=frontend",
+  "clean": "rm -rf node_modules package/*/node_modules package-lock.json",
+  "dev:frontend": "npm run dev --turbo --workspace=frontend"
+ },
+ "workspaces": [
+  "package/common",
+  "package/frontend",
+  "package/backend"
+ ]
+}

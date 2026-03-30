@@ -1,0 +1,38 @@
+# debug
+debug
+npm-debug.log*
+
+# dependencies
+node_modules/
+
+# env files
+/package/*/.env
+/package/*/cypress.env.json
+
+# large files
+/package/marionette/image_detection/model/model.safetensors
+/package/marionette/image_detection/model/pytorch_model.bin
+
+# misc
+.DS_Store
+*.pem
+
+# next.js
+.next/
+/out/
+
+# production
+/build
+
+# python files
+__pycache__
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# misc
+/package/web/stat.json
