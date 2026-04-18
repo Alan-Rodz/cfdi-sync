@@ -1,5 +1,17 @@
 {
- "common": {},
+ "common": {
+  "already_got_account": "Already have an account?",
+  "confirm_password": "Confirm Password",
+  "email": "Email",
+  "forgot_password": "Forgot Password?",
+  "login": "Login",
+  "no_account_yet": "Don't have an account yet?",
+  "password": "Password",
+  "recover_password": "Recover Password",
+  "recover_password_description": "Enter your email address to receive a password recovery link",
+  "register": "Register",
+  "send_email": "Send Email"
+ },
  "schema": {
   "misc": {
    "array": {
