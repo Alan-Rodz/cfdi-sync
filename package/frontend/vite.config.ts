@@ -24,7 +24,7 @@ export default defineConfig({
  resolve: {
   alias: {
    '@': path.resolve(__dirname, './src'),
-   '@catenae/common': path.resolve(__dirname, '../../package/common/src'),
+   'common': path.resolve(__dirname, '../../package/common/src'),
   },
  },
 });

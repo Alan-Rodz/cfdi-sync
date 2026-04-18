@@ -6,8 +6,7 @@ import { webRouter } from '@/constant/route';
 // == Component ===================================================================
 const LandingPage = () =>
  <div style={{ padding: '2rem' }}>
-  <h1>Welcome to Catenae!</h1>
-  <p>Your webhook management platform.</p>
+  <h1>Welcome!</h1>
  </div>;
 
 // == Export ======================================================================

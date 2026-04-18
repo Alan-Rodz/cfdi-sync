@@ -3,7 +3,7 @@ import { Box, Button, Container, TextField, Typography } from '@mui/material';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import { getRecoverPasswordSchema, recoverPasswordSchemaKeys, type RecoverPasswordData } from '@catenae/common';
+import { getRecoverPasswordSchema, recoverPasswordSchemaKeys, type RecoverPasswordData } from 'common';
 
 import { webRouter } from '@/constant/route';
 import { useLocale } from '@/ui/hook/useLocale';

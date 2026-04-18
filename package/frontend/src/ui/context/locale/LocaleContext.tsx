@@ -2,7 +2,7 @@
 
 import { createContext } from 'react';
 
-import type { AppLocale, LocaledTranslationFn } from '@catenae/common';
+import type { AppLocale, LocaledTranslationFn } from 'common';
 
 // ********************************************************************************
 // == Type ========================================================================

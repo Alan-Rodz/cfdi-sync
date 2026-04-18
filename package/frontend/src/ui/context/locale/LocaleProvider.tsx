@@ -1,8 +1,8 @@
 'use client';
 
-import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import { useEffect, useState, type FC, type PropsWithChildren } from 'react';
 
-import { FALLBACK_LANGUAGE_DATA, getLocaleObject, getLocaleSchema } from 'common';
+import { commonTranslationFunctionality, FALLBACK_LANGUAGE_DATA, getLocaleObject, getLocaleSchema, type AppLocale, type LocaleData, type LocaledTranslationFn } from 'common';
 
 import { WEBSITE_NAME } from '@/constant/website';
 

@@ -19,7 +19,7 @@
    "@/*": [
     "./src/*"
    ],
-   "@catenae/common": [
+   "common": [
     "../../package/common/src"
    ],
   },

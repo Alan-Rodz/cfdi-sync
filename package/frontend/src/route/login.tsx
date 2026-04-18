@@ -3,7 +3,7 @@ import { Box, Button, Container, TextField } from '@mui/material';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import { getLoginSchema, loginSchemaKeys, type LoginData } from '@catenae/common';
+import { getLoginSchema, loginSchemaKeys, type LoginData } from 'common';
 
 import { webRouter } from '@/constant/route';
 import { useLocale } from '@/ui/hook/useLocale';

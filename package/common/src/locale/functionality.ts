@@ -1,15 +1,12 @@
 import { enUS, es } from 'date-fns/locale';
-import { string } from 'yup';
+import { z } from 'zod';
 
 import englishLanguageData from './locales/EN.json';
+// import spanishLanguageData from './locales/ES.json';
 
 // ********************************************************************************
 // == Type ========================================================================
-// (SEE: package/common/src/db/enum.sql)
-export enum AppLocale {
- EN = 'EN',
- ES = 'ES',
-}
+export type AppLocale = 'EN' | 'ES';
 
 // -- Generic ---------------------------------------------------------------------
 export type NestedKeys<T> = T extends object
@@ -32,16 +29,18 @@ export type TranslationReplacement = { [key: string]: string | number; };
 
 export type TranslationFn<T> = (path: LocalePath<T>, replacement?: TranslationReplacement) => string;
 
-export type BoringHomesTranslationFn = TranslationFn<LocaleJsonObj>;
+export type LocaledTranslationFn = TranslationFn<LocaleJsonObj>;
 
 // -- Data ------------------------------------------------------------------------
 export type LocaleData = { [key: string]: string | LocaleData; };
 
 // -- Usage -----------------------------------------------------------------------
-type LocaleJsonObj = typeof englishLanguageData;
+export type LocaleJsonObj = typeof englishLanguageData;
 export type LocaleKey = NestedKeys<LocaleJsonObj>;
 
 // == Constant ====================================================================
+export const appLocales: AppLocale[] = ['EN', 'ES'];
+
 // NOTE: this is exposed so the front end uses it, where locale is stateful
 export const FALLBACK_LANGUAGE_DATA = englishLanguageData;
 
@@ -61,40 +60,37 @@ export const commonTranslationFunctionality = (languageData: LocaleData, path: L
 
 export const getLocaleObject = async (locale: AppLocale) => {
  switch (locale) {
-  case AppLocale.EN: return englishLanguageData;
-  // case AppLocale.ES: return spanishLanguageData;
-  default: return englishLanguageData;
+  case 'EN': { return englishLanguageData; }
+  case 'ES': { return englishLanguageData; }
+  default: { return englishLanguageData; }
  }
 };
 
 export const getLocaleForDateFns = (locale: AppLocale) => {
  switch (locale) {
-  case AppLocale.ES: return es;
-  case AppLocale.EN: return enUS;
+  case 'EN': return enUS;
+  case 'ES': return es;
   default: return es;
  }
 };
 
 // == Defaults ====================================================================
 // used on the server side as default for schemas
-export const spanishTranslationFunction: BoringHomesTranslationFn = (path, replacement) =>
+export const spanishTranslationFunction: LocaledTranslationFn = (path, replacement) =>
  commonTranslationFunctionality(FALLBACK_LANGUAGE_DATA, path, replacement);
 
-export const englishTranslationFunction: BoringHomesTranslationFn = (path, replacement) =>
+export const englishTranslationFunction: LocaledTranslationFn = (path, replacement) =>
  commonTranslationFunctionality(englishLanguageData, path, replacement);
 
 // == Schema ======================================================================
-export const getLocaleSchema = (t: BoringHomesTranslationFn = spanishTranslationFunction) =>
- string()
-  .typeError(t('schema.misc.locale.type'))
-  .oneOf(Object.values(AppLocale), t('schema.misc.locale.one_of'))
-  .required(t('schema.misc.locale.required'));
+export const getLocaleSchema = (t: LocaledTranslationFn = spanishTranslationFunction) =>
+ z.enum(['EN', 'ES'], { message: t('schema.misc.locale.one_of') });
 
 // == Util ========================================================================
 export const displayLocale = (locale: AppLocale): string => {
  switch (locale) {
-  case AppLocale.EN: return 'English';
-  case AppLocale.ES: return 'Español';
+  case 'EN': return 'English';
+  case 'ES': return 'Español';
   default: return locale;
  }
 };
