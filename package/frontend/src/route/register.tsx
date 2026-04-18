@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { getRegisterUserSchema, registerUserSchemaKeys, type RegisterUserData } from 'common';
 
 import { webRouter } from '@/constant/route';
-import { authService } from '@/service/authService';
 import { useLocale } from '@/ui/hook/useLocale';
 
 // ********************************************************************************
@@ -22,8 +21,8 @@ const RegisterPage = () => {
  // -- Handler --------------------------------------------------------------------
  const onSubmit = async (data: RegisterUserData) => {
   try {
-   const result = await authService.signup(data);
-   authService.setToken(result.token!);
+   // const result = await authService.signup(data);
+   // authService.setToken(result.token!);
    navigate({ to: webRouter.authed.dashboard.index });
   } catch (error) {
    console.error('Registration error:', error);
