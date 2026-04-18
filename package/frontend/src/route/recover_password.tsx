@@ -24,31 +24,31 @@ const RecoverPasswordPage = () => {
 
  // -- UI -------------------------------------------------------------------------
  return (
-  <Container component='main' maxWidth='xs' sx={{ alignItems: 'center', display: 'flex', height: '70vh' }}>
-   <Box sx={{ width: '100%' }}>
-    <Typography variant='h5' sx={{ mb: 2, textAlign: 'center' }}>{t('common.recover_password')}</Typography>
-    <Typography variant='body2' sx={{ mb: 3, textAlign: 'center' }}>{t('common.recover_password_description')}</Typography>
+  <Container className='flex h-[70vh] items-center' component='main' maxWidth='xs'>
+   <Box className='w-full'>
+    <Typography className='mb-2 text-center' variant='h5'>{t('common.recover_password')}</Typography>
+    <Typography className='mb-3 text-center' variant='body2'>{t('common.recover_password_description')}</Typography>
 
     <form onSubmit={handleSubmit(onSubmit)}>
-     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+     <Box className='flex flex-col gap-2'>
       <TextField
        {...register(recoverPasswordSchemaKeys.email)}
+       error={!!errors.email}
+       fullWidth
+       helperText={errors.email?.message}
        label={t('common.email')}
        type='email'
-       error={!!errors.email}
-       helperText={errors.email?.message}
-       fullWidth
       />
 
       <Button
-       type='submit'
+       className='p-3'
        disabled={isSubmitting}
-       style={{ padding: '0.75rem' }}
+       type='submit'
       >
        {t('common.send_email')}
       </Button>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, mt: 2 }}>
+      <Box className='flex flex-col gap-1 items-center mt-2'>
        <Link to={webRouter.nonAuthed.login.index}><Button>{t('common.already_got_account')}</Button></Link>
        <Link to={webRouter.nonAuthed.register}><Button>{t('common.no_account_yet')}</Button></Link>
       </Box>

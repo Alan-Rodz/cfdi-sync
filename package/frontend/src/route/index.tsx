@@ -5,7 +5,7 @@ import { webRouter } from '@/constant/route';
 // ********************************************************************************
 // == Component ===================================================================
 const LandingPage = () =>
- <div style={{ padding: '2rem' }}>
+ <div className='p-8'>
   <h1>Welcome!</h1>
  </div>;
 

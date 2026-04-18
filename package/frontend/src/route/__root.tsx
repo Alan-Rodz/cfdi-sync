@@ -10,7 +10,7 @@ export const Route = createRootRoute({
  component: () => (
   <>
    <div>
-    <nav style={{ padding: '1rem', borderBottom: '1px solid #ccc' }}>
+    <nav className='border-[#ccc] border-b p-4'>
      <Link to={webRouter.nonAuthed.landing_page}><Button>Landing page</Button></Link>
      <Link to={webRouter.nonAuthed.login.index}><Button>Login</Button></Link>
     </nav>

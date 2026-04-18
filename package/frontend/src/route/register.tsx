@@ -31,46 +31,46 @@ const RegisterPage = () => {
 
  // -- UI -------------------------------------------------------------------------
  return (
-  <Container component='main' maxWidth='xs' sx={{ alignItems: 'center', display: 'flex', height: '70vh' }}>
-   <Box sx={{ width: '100%' }}>
+  <Container className='flex h-[70vh] items-center' component='main' maxWidth='xs'>
+   <Box className='w-full'>
     <form onSubmit={handleSubmit(onSubmit)}>
-     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+     <Box className='flex flex-col gap-2'>
       <TextField
        {...register(registerUserSchemaKeys.email)}
+       error={!!errors.email}
+       fullWidth
+       helperText={errors.email?.message}
        label={t('common.email')}
        type='email'
-       error={!!errors.email}
-       helperText={errors.email?.message}
-       fullWidth
       />
 
       <TextField
        {...register(registerUserSchemaKeys.password)}
+       error={!!errors.password}
+       fullWidth
+       helperText={errors.password?.message}
        label={t('common.password')}
        type='password'
-       error={!!errors.password}
-       helperText={errors.password?.message}
-       fullWidth
       />
 
       <TextField
        {...register(registerUserSchemaKeys.passwordConfirmation)}
+       error={!!errors.passwordConfirmation}
+       fullWidth
+       helperText={errors.passwordConfirmation?.message}
        label={t('common.confirm_password')}
        type='password'
-       error={!!errors.passwordConfirmation}
-       helperText={errors.passwordConfirmation?.message}
-       fullWidth
       />
 
       <Button
-       type='submit'
+       className='p-3'
        disabled={isSubmitting}
-       style={{ padding: '0.75rem' }}
+       type='submit'
       >
        {t('common.register')}
       </Button>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, mt: 2 }}>
+      <Box className='flex flex-col gap-1 items-center mt-2'>
        <Link to={webRouter.nonAuthed.login.index}><Button>{t('common.already_got_account')}</Button></Link>
        <Link to={webRouter.nonAuthed.recover_password}><Button>{t('common.forgot_password')}</Button></Link>
       </Box>
