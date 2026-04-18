@@ -1,0 +1,109 @@
+{
+ "common": {},
+ "schema": {
+  "misc": {
+   "array": {
+    "max": "The array must have fewer than {{max}} elements",
+    "min": "The array must have at least {{min}} elements",
+    "required": "The array is required",
+    "type": "The array must be an array"
+   },
+   "boolean": {
+    "required": "The boolean value is required",
+    "type": "The boolean value must be a boolean"
+   },
+   "client_file": {
+    "type": "The client file must be an instance of the File class"
+   },
+   "currency": {
+    "one_of": "The currency must be one of the allowed values",
+    "required": "The currency is required",
+    "type": "The currency must be a string",
+    "valid": "The currency must be valid"
+   },
+   "date": {
+    "required": "The date is required",
+    "type": "The date must be a date",
+    "valid": "The date must be valid"
+   },
+   "email": {
+    "required": "The email is required",
+    "type": "The email must be a string",
+    "valid": "The email must be valid"
+   },
+   "file_base_64": {
+    "array": {
+     "max": "The base64 file array must have fewer than {{max}} elements",
+     "min": "The base64 file array must have at least {{min}} elements",
+     "required": "The base64 file array is required",
+     "type": "The base64 file object must be an array"
+    },
+    "b64_string": "The base64 string must be a string",
+    "b64_string_required": "The base64 string is required",
+    "filename": "The base64 filename must be a string",
+    "filename_required": "The base64 filename is required",
+    "required": "The base64 file object is required",
+    "type": "The base64 file object must be an object"
+   },
+   "locale": {
+    "one_of": "The locale must be one of the allowed values",
+    "required": "The locale is required",
+    "type": "The locale must be a string"
+   },
+   "number": {
+    "max": "The number must be less than or equal to {{max}}",
+    "min": "The number must be greater than or equal to {{min}}",
+    "numeric_string_match": "The number must be a numeric string that matches the pattern {{pattern}}",
+    "numeric_string_type": "The number must be a numeric string",
+    "numeric_string_required": "The numeric string is required",
+    "type": "The number must be a number",
+    "valid": "The number must be valid",
+    "required": "The number is required"
+   },
+   "numrange": {
+    "valid": "The number range must be valid"
+   },
+   "object": {
+    "required": "The object is required",
+    "type": "The object must be an object"
+   },
+   "password": {
+    "max": "The password must be fewer than {{max}} characters",
+    "min": "The password must have at least {{min}} characters",
+    "required": "The password is required",
+    "type": "The password must be a string"
+   },
+   "password_confirmation": {
+    "match": "The passwords must match",
+    "required": "The password confirmation is required",
+    "type": "The password confirmation must be a string"
+   },
+   "phone_number": {
+    "test_name": "Phone number",
+    "valid": "The phone number must be 10 digits"
+   },
+   "string": {
+    "equals": "The string must be equal to {{equals}}",
+    "max": "The string must be fewer than {{max}} characters",
+    "min": "The string must have at least {{min}} characters",
+    "required": "The string is required",
+    "type": "The string must be a string"
+   },
+   "timezone": {
+    "one_of": "The timezone must be one of the allowed values",
+    "required": "The timezone is required",
+    "type": "The timezone must be a string"
+   },
+   "uuid": {
+    "required": "The UUID is required",
+    "type": "The UUID must be a string",
+    "valid": "The UUID must be valid"
+   },
+   "url": {
+    "required": "The URL is required",
+    "type": "The URL must be a string",
+    "valid": "The URL must be valid"
+   }
+  }
+ }
+}

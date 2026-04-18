@@ -4,7 +4,9 @@
  "description": "",
  "license": "UNLICENSED",
  "dependencies": {
-  "uuid": "13.0.0"
+  "uuid": "13.0.0",
+  "date-fns": "4.1.0",
+  "yup": "1.7.1"
  },
  "devDependencies": {
   "@types/node": "25.5.0",

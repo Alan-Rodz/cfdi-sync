@@ -46,7 +46,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/recover_password': typeof Recover_passwordRoute
   '/register': typeof RegisterRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -65,7 +65,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/recover_password' | '/register' | '/dashboard'
+  fullPaths: '/' | '/login' | '/recover_password' | '/register' | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/login' | '/recover_password' | '/register' | '/dashboard'
   id:
@@ -118,7 +118,7 @@ declare module '@tanstack/react-router' {
     '/dashboard/': {
       id: '/dashboard/'
       path: '/dashboard'
-      fullPath: '/dashboard'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

@@ -2,8 +2,9 @@
 
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 
+import { FALLBACK_LANGUAGE_DATA, getLocaleObject, getLocaleSchema } from 'common';
+
 import { WEBSITE_NAME } from '@/constant/website';
-import { commonTranslationFunctionality, FALLBACK_LANGUAGE_DATA, getLocaleObject, getLocaleSchema, type AppLocale, type LocaleData, type LocaledTranslationFn } from '@catenae/common';
 
 import { LocaleContext } from './LocaleContext';
 
@@ -15,6 +16,7 @@ export const LocaleProvider: FC<PropsWithChildren> = ({ children }) => {
  // -- State ---------------------------------------------------------------------
  const [currentLocale, setCurrentLocale] = useState<AppLocale>('EN');
  const [languageData, setLanguageData] = useState<LocaleData>(FALLBACK_LANGUAGE_DATA);
+
 
  // -- Effect --------------------------------------------------------------------
  useEffect(() => {

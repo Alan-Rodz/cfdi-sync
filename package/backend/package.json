@@ -4,7 +4,7 @@
  "description": "",
  "license": "UNLICENSED",
  "dependencies": {
-  "fastify": "5.8.4"
+  "fastify": "5.8.5"
  },
  "type": "module",
  "devDependencies": {
