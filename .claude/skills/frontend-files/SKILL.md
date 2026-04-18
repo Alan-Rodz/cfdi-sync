@@ -112,12 +112,72 @@ Inside React components, keep a predictable progression:
 
 This matters because it keeps files easy to scan and makes diffs more predictable.
 
-## 6. JSX And UI Conventions
+## 6. Tailwind CSS And className Conventions
+
+Frontend styling uses **Tailwind CSS v4** instead of Material UI `sx` props or inline `style` objects.
+
+**className First:**
+
+- Always place `className` as the first prop on JSX elements.
+- Tailwind class names should be alphabetically ordered left-to-right within the string.
+- Prefer longer, more descriptive class names for clarity over abbreviations.
+
+**Example:**
+
+```tsx
+// Good: className first, classes alphabetically ordered
+<Box className="flex flex-col gap-2 items-center mt-2">
+  {children}
+</Box>
+
+// Avoid: className not first, or unordered classes
+<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+  {children}
+</Box>
+```
+
+**Alphabetical Ordering:**
+
+- Tailwind utilities should be sorted alphabetically within `className` (e.g., `flex flex-col gap-2 items-center mt-2` not `flex items-center flex-col mt-2 gap-2`).
+- This makes diffs stable and class usage predictable.
+
+## 7. JSX Props Ordering
+
+Order JSX props consistently from left to right:
+
+1. `className` (if present).
+2. All other props in alphabetical order.
+3. Event handlers and callbacks at the end if grouping by type is clearer.
+
+**Example:**
+
+```tsx
+// Good: className first, then alphabetical
+<TextField
+  className="w-full"
+  error={!!errors.email}
+  fullWidth
+  helperText={errors.email?.message}
+  label={t('common.email')}
+  type="email"
+  {...register('email')}
+/>
+
+// Avoid: className not first, or unordered
+<TextField
+  error={!!errors.email}
+  label={t('common.email')}
+  className="w-full"
+  {...register('email')}
+/>
+```
+
+## 8. JSX And UI Conventions
 
 Prefer:
 
 - A dedicated `// -- UI` section before the returned JSX in non-trivial components.
-- Stable prop ordering in JSX when practical.
+- Stable prop ordering in JSX when practical (see section 7).
 - Readable multiline props once lines get dense.
 - Small helper components split out when a single return block becomes hard to follow.
 
@@ -126,7 +186,7 @@ Avoid:
 - Deeply nested inline logic when a derived variable or handler would make intent clearer.
 - Unstable reordering of props or sections without a reason.
 
-## 7. Export Placement Nuance
+## 9. Export Placement Nuance
 
 Use the existing repo pattern instead of forcing one universal export rule:
 
@@ -134,7 +194,7 @@ Use the existing repo pattern instead of forcing one universal export rule:
 - Bottom `Export` sections are common for Next.js entry files and some config-style modules.
 - When editing an existing file, preserve its export style unless there is a strong reason to normalize it.
 
-## 8. Client Component Conventions
+## 10. Client Component Conventions
 
 When a file requires client-only React features in Next app code:
 
@@ -142,14 +202,14 @@ When a file requires client-only React features in Next app code:
 - Leave a blank line after it before imports.
 - Follow the same separator and section patterns after imports.
 
-## 9. Practical Rules
+## 11. Practical Rules
 
 - Match the local file’s terse style. Many frontend files here are compact.
 - Use separators to clarify structure, not to make files longer.
 - Preserve inline named export style when it is already the dominant file pattern.
 - Prefer consistency with neighboring files over abstract stylistic purity.
 
-## 10. Self-Check
+## 12. Self-Check
 
 Before finalizing a frontend file, confirm:
 
@@ -159,6 +219,10 @@ Before finalizing a frontend file, confirm:
 4. State/effects/handlers/UI appear in a predictable order.
 5. Export placement matches the repo pattern for that file type.
 6. JSX is readable and not overloaded with inline logic.
+7. **All `className` props come first** on JSX elements.
+8. **Tailwind classes within `className` are alphabetically ordered.**
+9. **All other JSX props are alphabetically ordered** after `className`.
+10. No `sx` props or inline `style` objects—use Tailwind `className` instead.
 
 ## Examples
 
@@ -181,7 +245,11 @@ export const ExampleComponent: FC<Props> = ({ label, value }) => {
  const handleClick = () => setOpen(true);
 
  // -- UI -------------------------------------------------------------------------
- return <div onClick={handleClick}>{label}: {value}</div>;
+ return (
+  <div className="flex items-center gap-2" onClick={handleClick}>
+   {label}: {value}
+  </div>
+ );
 };
 ```
 
@@ -189,9 +257,27 @@ export const ExampleComponent: FC<Props> = ({ label, value }) => {
 
 ```ts
 const SomePage = async () => {
- return <div />;
+ return <div className="p-8" />;
 };
 
 // == Export ======================================================================
 export default SomePage;
+```
+
+### Example: JSX prop order with Tailwind
+
+```tsx
+// Good: className first, then other props alphabetically
+<Container
+  className="flex h-[70vh] items-center"
+  component="main"
+  maxWidth="xs"
+>
+  {children}
+</Container>
+
+// Good: all classes alphabetically ordered
+<Box className="flex flex-col gap-1 items-center mt-2">
+  {children}
+</Box>
 ```

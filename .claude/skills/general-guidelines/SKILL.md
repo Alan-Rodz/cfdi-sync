@@ -9,7 +9,7 @@ Use this skill to keep code aligned with conventions already used across this re
 
 If unsure about a style choice, read `references/repo-examples.md` and follow the nearest matching example.
 
-For React, TSX, hooks, Next.js pages/layouts, and UI helper files in `package/web` or `package/lite-web`, also follow `../frontend-files/SKILL.md` for frontend-specific file structure.
+For React, TSX, hooks, Next.js pages/layouts, and UI helper files in `package/frontend`, also follow `../frontend-files/SKILL.md` for frontend-specific file structure, Tailwind CSS v4 conventions, and className ordering.
 
 ## 1. Start With Repo Structure
 
@@ -122,9 +122,33 @@ Strong preference:
 
 - Keep object keys alphabetized where it improves scanability (schema keys, table columns, config objects).
 - In component/hooks, prefer stable and predictable declaration order (often alphabetical left-to-right or top-to-bottom).
+- In JSX, place `className` first when present, then order remaining props alphabetically.
+- Within Tailwind `className` strings, order utility classes alphabetically from left to right for stable diffs and consistent discovery.
 - Keep related destructured variables grouped and consistently ordered.
 
 If strict alphabetical order conflicts with semantic grouping, keep grouping but maintain stable internal order.
+
+**Example: JSX Prop Order**
+
+```tsx
+// className first, then props alphabetically
+<Component
+  className="flex gap-2 items-center"
+  backgroundColor="white"
+  disabled={false}
+  onClick={handleClick}
+  title="Example"
+/>
+```
+
+**Example: Tailwind Classes Alphabetically Ordered**
+
+```tsx
+// Alphabetically ordered: flex, flex-col, gap-2, items-center, mt-2
+<Box className="flex flex-col gap-2 items-center mt-2">
+  {children}
+</Box>
+```
 
 ## 7. Control Flow Style
 
