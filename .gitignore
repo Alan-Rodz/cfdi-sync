@@ -36,3 +36,5 @@ next-env.d.ts
 
 # misc
 /package/web/stat.json
+
+supabase/

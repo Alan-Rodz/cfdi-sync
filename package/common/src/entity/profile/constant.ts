@@ -1,8 +1,9 @@
+import { Database } from '../../db/type';
 import { Profile } from './type';
 
 // ********************************************************************************
 // == Table =======================================================================
-export const profileTableName =  'profile' as const;
+export const profileTableName: Extract<keyof Database['public']['Tables'], 'profile'> = 'profile' as const;
 
 // == Column ======================================================================
 export const profileTableColumns: { [key in keyof Profile]: key } = {
