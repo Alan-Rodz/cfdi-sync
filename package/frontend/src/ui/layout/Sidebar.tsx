@@ -9,6 +9,7 @@ import { appIcons } from '@/ui/constant/icon';
 import { useAuth } from '@/ui/hook/useAuth';
 import type { DrawerDisclosure } from '@/ui/hook/useDrawerDisclosure';
 import { useResponsive } from '@/ui/hook/useResponsive';
+import { useLocale } from '../hook/useLocale';
 
 // ********************************************************************************
 // == Type ========================================================================
@@ -20,10 +21,6 @@ type Props = {
 const OPEN_DRAWER_WIDTH = 240;
 const CLOSED_DRAWER_WIDTH = 65;
 
-const menuItems = [
- { icon: appIcons.home, label: 'Home', href: frontendRoutes.nonAuthed.landing_page },
- { icon: appIcons.profile, label: 'Profile', href: frontendRoutes.nonAuthed.landing_page },
-];
 
 // == Component ===================================================================
 export const Sidebar: FC<Props> = ({ drawerDisclosure }) => {
@@ -71,9 +68,15 @@ export const Sidebar: FC<Props> = ({ drawerDisclosure }) => {
  );
 };
 
+// ================================================================================
 const DrawerItems: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
  const { isAuthenticated } = useAuth();
+ const { t } = useLocale();
 
+ // -- UI -------------------------------------------------------------------------
+ const menuItems = [
+  { icon: appIcons.profile, label: t('common.my_profile'), href: frontendRoutes.nonAuthed.landing_page },
+ ];
  return (
   <List sx={{ padding: 0 }}>
    {menuItems.map((item) => (

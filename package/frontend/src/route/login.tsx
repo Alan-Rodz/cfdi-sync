@@ -87,7 +87,6 @@ const LoginPage = () => {
 
       <Button
        disabled={disabled}
-       sx={{ p: 3 }}
        type='submit'
       >
        {disabled ? t('common.loading') : t('auth.login')}
