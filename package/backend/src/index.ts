@@ -1,15 +1,25 @@
 import fastifyCors from '@fastify/cors';
+import { createClient } from '@supabase/supabase-js';
 import fastify from 'fastify';
 
-import { addAuthRoutes } from './route/auth';
+import { Database, englishTranslationFunction } from 'common';
+
+import { AuthController } from './controller/auth';
 
 // ********************************************************************************
 // == Constant ====================================================================
 const server = fastify();
 await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
+const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 // == Setup =======================================================================
-await addAuthRoutes(server);
+const controllers = [
+ new AuthController({ client: supaBaseClient, t: englishTranslationFunction }),
+];
+
+for (const controller of controllers) {
+ await controller.addRoutes(server);
+}
 
 // == Listen ======================================================================
 server.listen({ port: Number(process.env.PORT) }, (error, address) => {
