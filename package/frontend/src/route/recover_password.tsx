@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 
 import { frontendRoutes, getRecoverPasswordSchema, recoverPasswordSchemaKeys, type RecoverPasswordData } from 'common';
 
+import { ensureProfileIs } from './guard';
+
 import { useLocale } from '@/ui/hook/useLocale';
 
 // ********************************************************************************
@@ -59,4 +61,7 @@ const RecoverPasswordPage = () => {
 };
 
 // == Export ======================================================================
-export const Route = createFileRoute(frontendRoutes.nonAuthed.recover_password)({ component: RecoverPasswordPage });
+export const Route = createFileRoute(frontendRoutes.nonAuthed.recover_password)({
+ beforeLoad: ensureProfileIs('loggedOut', frontendRoutes.authed.dashboard.index),
+ component: RecoverPasswordPage,
+});

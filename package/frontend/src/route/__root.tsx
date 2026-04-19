@@ -1,12 +1,15 @@
 import { Button } from '@mui/material';
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import { frontendRoutes } from 'common';
 
 // ********************************************************************************
+// == Type ========================================================================
+export type RouterContext = { isAuthenticated: boolean; isLoading: boolean; };
+
 // == Component ===================================================================
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
  component: () => (
   <>
    <div>

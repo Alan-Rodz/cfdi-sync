@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 
 import { frontendRoutes, getLoginSchema, type LoginData, loginSchemaKeys } from 'common';
 
+import { ensureProfileIs } from './guard';
+
 import { useAuth } from '@/ui/hook/useAuth';
 import { useLocale } from '@/ui/hook/useLocale';
 
@@ -87,4 +89,7 @@ const LoginPage = () => {
 };
 
 // == Export ======================================================================
-export const Route = createFileRoute(frontendRoutes.nonAuthed.login.index)({ component: LoginPage });
+export const Route = createFileRoute(frontendRoutes.nonAuthed.login.index)({
+ beforeLoad: ensureProfileIs('loggedOut', frontendRoutes.authed.dashboard.index),
+ component: LoginPage,
+});

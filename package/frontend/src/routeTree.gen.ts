@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './route/__root'
 import { Route as RegisterRouteImport } from './route/register'
 import { Route as Recover_passwordRouteImport } from './route/recover_password'
 import { Route as LoginRouteImport } from './route/login'
+import { Route as GuardRouteImport } from './route/guard'
 import { Route as IndexRouteImport } from './route/index'
 import { Route as DashboardIndexRouteImport } from './route/dashboard/index'
 
@@ -30,6 +31,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuardRoute = GuardRouteImport.update({
+  id: '/guard',
+  path: '/guard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/guard': typeof GuardRoute
   '/login': typeof LoginRoute
   '/recover_password': typeof Recover_passwordRoute
   '/register': typeof RegisterRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/guard': typeof GuardRoute
   '/login': typeof LoginRoute
   '/recover_password': typeof Recover_passwordRoute
   '/register': typeof RegisterRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/guard': typeof GuardRoute
   '/login': typeof LoginRoute
   '/recover_password': typeof Recover_passwordRoute
   '/register': typeof RegisterRoute
@@ -65,12 +74,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/recover_password' | '/register' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/guard'
+    | '/login'
+    | '/recover_password'
+    | '/register'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/recover_password' | '/register' | '/dashboard'
+  to:
+    | '/'
+    | '/guard'
+    | '/login'
+    | '/recover_password'
+    | '/register'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
+    | '/guard'
     | '/login'
     | '/recover_password'
     | '/register'
@@ -79,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GuardRoute: typeof GuardRoute
   LoginRoute: typeof LoginRoute
   Recover_passwordRoute: typeof Recover_passwordRoute
   RegisterRoute: typeof RegisterRoute
@@ -108,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guard': {
+      id: '/guard'
+      path: '/guard'
+      fullPath: '/guard'
+      preLoaderRoute: typeof GuardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -127,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GuardRoute: GuardRoute,
   LoginRoute: LoginRoute,
   Recover_passwordRoute: Recover_passwordRoute,
   RegisterRoute: RegisterRoute,

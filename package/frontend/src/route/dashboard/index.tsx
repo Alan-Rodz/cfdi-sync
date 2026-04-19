@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { frontendRoutes } from 'common';
 
+import { ensureProfileIs } from '../guard';
+
 // ********************************************************************************
 // == Component ===================================================================
 const DashboardPage = () =>
@@ -10,4 +12,7 @@ const DashboardPage = () =>
  </div>;
 
 // == Export ======================================================================
-export const Route = createFileRoute(`${frontendRoutes.authed.dashboard.index}/`)({ component: DashboardPage });
+export const Route = createFileRoute(`${frontendRoutes.authed.dashboard.index}/`)({
+ beforeLoad: ensureProfileIs('loggedIn', frontendRoutes.nonAuthed.login.index),
+ component: DashboardPage,
+});

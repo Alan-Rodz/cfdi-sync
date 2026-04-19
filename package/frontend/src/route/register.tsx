@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 
 import { getRegisterUserSchema, registerUserSchemaKeys, frontendRoutes, type RegisterProfileData } from 'common';
 
+import { ensureProfileIs } from './guard';
+
 import { useAuth } from '@/ui/hook/useAuth';
 import { useLocale } from '@/ui/hook/useLocale';
 
@@ -98,4 +100,7 @@ const RegisterPage = () => {
 };
 
 // == Export ======================================================================
-export const Route = createFileRoute(frontendRoutes.nonAuthed.register)({ component: RegisterPage });
+export const Route = createFileRoute(frontendRoutes.nonAuthed.register)({
+ beforeLoad: ensureProfileIs('loggedOut', frontendRoutes.authed.dashboard.index),
+ component: RegisterPage,
+});
