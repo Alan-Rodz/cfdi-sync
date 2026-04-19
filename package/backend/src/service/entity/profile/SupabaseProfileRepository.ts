@@ -3,7 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database, Profile, profileTableColumns, profileTableName } from 'common';
 
 import { LoggerPort } from '../../logger/type';
-import { ProfileRepositoryPort } from './type';
+import { ProfileRepositoryClient, ProfileRepositoryPort } from './type';
 
 // ********************************************************************************
 // == Repository ==================================================================
@@ -20,8 +20,8 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
  }
 
  // -- Public ---------------------------------------------------------------------
- public async findProfileByEmail(email: Profile['email'], supabaseAccessToken: string): Promise<Profile | null> {
-  const client = this.getScopedClient(supabaseAccessToken);
+ public async findProfileByEmail(email: Profile['email'], clientOrToken: ProfileRepositoryClient): Promise<Profile | null> {
+  const client = this.getScopedClient(clientOrToken);
 
   const { data: profileObj, error: profileObjError } = await client
    .from(profileTableName)
@@ -41,8 +41,8 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
   return profileObj[0] as Profile;
  }
 
- public async findProfileById(profileId: Profile['id'], supabaseAccessToken: string): Promise<Profile | null> {
-  const client = this.getScopedClient(supabaseAccessToken);
+ public async findProfileById(profileId: Profile['id'], clientOrToken: ProfileRepositoryClient): Promise<Profile | null> {
+  const client = this.getScopedClient(clientOrToken);
 
   const { data: profile, error } = await client
    .from(profileTableName)
@@ -77,8 +77,8 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
   return !!existing && existing.length > 0;
  }
 
- public async updateProfileName(profileId: Profile['id'], name: Profile['name'], supabaseAccessToken: string): Promise<Profile | null> {
-  const client = this.getScopedClient(supabaseAccessToken);
+ public async updateProfileName(profileId: Profile['id'], name: Profile['name'], clientOrToken: ProfileRepositoryClient): Promise<Profile | null> {
+  const client = this.getScopedClient(clientOrToken);
 
   const { data: updatedProfile, error: updatedProfileError } = await client
    .from(profileTableName)
@@ -104,11 +104,15 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
   await this.loggerPort?.safeLogError(message, error);
  }
 
- private getScopedClient(supabaseAccessToken: string) {
+ private getScopedClient(clientOrToken: ProfileRepositoryClient) {
+  if (typeof clientOrToken !== 'string') {
+   return clientOrToken;
+  } /* else -- build client from token */
+
   return createClient<Database>(
    process.env.SUPABASE_URL!,
    process.env.SUPABASE_KEY!,
-   { global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } } }
+   { global: { headers: { Authorization: `Bearer ${clientOrToken}` } } }
   );
  }
 }

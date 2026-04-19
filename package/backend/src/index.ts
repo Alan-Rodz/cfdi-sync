@@ -3,7 +3,9 @@ import fastifyJwt from '@fastify/jwt';
 import { createClient } from '@supabase/supabase-js';
 import fastify from 'fastify';
 
-import { Database, englishTranslationFunction, RequestMethod } from 'common';
+import { Database, englishTranslationFunction, RequestHeader, RequestMethod, ResponseStatus } from 'common';
+
+import type { AuthenticatedRequestContext } from './fastify';
 
 import { getControllers } from './controller';
 import { SupabaseProfileAuth } from './service/entity/profile/SupabaseProfileAuth';
@@ -15,7 +17,33 @@ import { Logger } from './service/logger/Logger';
 const server = fastify();
 await server.register(fastifyCors, { methods: [RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH], origin: process.env.FRONTEND_URL! });
 await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
+
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+server.decorateRequest('authContext', null);
+server.decorate('authenticateWithSupabase', async (request, reply) => {
+ await request.jwtVerify();
+
+ const header = request.headers[RequestHeader.SupabaseAccessToken.toLowerCase()];
+ const supabaseAccessToken = typeof header === 'string'
+  ? header.trim()
+  : Array.isArray(header)
+   ? header[0]?.trim() || ''
+   : '';
+
+ if (!supabaseAccessToken) {
+  return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: englishTranslationFunction('auth.invalid_credentials') });
+ } /* else -- Supabase token is available */
+
+ request.authContext = {
+  payload: request.user as AuthenticatedRequestContext['payload'],
+  supabaseAccessToken,
+  supabaseClient: createClient<Database>(
+   process.env.SUPABASE_URL!,
+   process.env.SUPABASE_KEY!,
+   { global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } } }
+  ),
+ };
+});
 
 const loggerPort = new Logger(supaBaseClient, { scope: 'General' });
 const profileAuth = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));

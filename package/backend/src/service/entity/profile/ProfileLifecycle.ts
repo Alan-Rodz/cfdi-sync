@@ -1,4 +1,7 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { englishTranslationFunction, LocaledTranslationFn, LoginData, Profile, RegisterProfileData, ResponseStatus } from 'common';
+import type { Database } from 'common';
 
 import { LoggerPort } from '../../logger/type';
 import { ServiceResult } from '../../type';
@@ -64,11 +67,11 @@ export class ProfileLifecycle {
   return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.CREATED, supabaseAccessToken: signUpResult.supabaseAccessToken, token };
  }
 
- public async getCurrentProfile(profileId: Profile['id'], supabaseAccessToken: string): Promise<ServiceResult<Profile>> {
+ public async getCurrentProfile(profileId: Profile['id'], supabaseClient: SupabaseClient<Database>): Promise<ServiceResult<Profile>> {
   let profile: Profile | null = null;
 
   try {
-  profile = await this.profileRepositoryPort.findProfileById(profileId, supabaseAccessToken);
+   profile = await this.profileRepositoryPort.findProfileById(profileId, supabaseClient);
   } catch (error) {
    await this.safeLogError('#f96251d3 Failed to fetch current profile', error);
    return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
@@ -81,7 +84,7 @@ export class ProfileLifecycle {
   return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
  }
 
- public async patchProfileName(profileId: Profile['id'], name: Profile['name'], supabaseAccessToken: string): Promise<ServiceResult<Profile>> {
+ public async patchProfileName(profileId: Profile['id'], name: Profile['name'], supabaseClient: SupabaseClient<Database>): Promise<ServiceResult<Profile>> {
   if (!name.trim()) {
    this.loggerPort?.info(`#1964cbf3 Invalid profile name provided ${profileId} - ${name}`);
    return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };
@@ -89,7 +92,7 @@ export class ProfileLifecycle {
 
   let profile: Profile | null = null;
   try {
-   profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim(), supabaseAccessToken);
+   profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim(), supabaseClient);
   } catch (error) {
    await this.safeLogError('#5afe86f3 Failed to patch profile name', error);
    return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };

@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, RequestHeader, ResponseStatus } from 'common';
+import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, ResponseStatus } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
 
 import { Controller } from '../Controller';
-import { AuthControllerDependencies, TokenPayload } from './type';
+import { AuthControllerDependencies } from './type';
 
 // ********************************************************************************
 // == Controller ==================================================================
@@ -21,26 +21,13 @@ export class AuthController extends Controller {
 
  // -- Public ---------------------------------------------------------------------
  public async addRoutes(server: FastifyInstance) {
-  server.patch<{ Body: PatchProfileNameData }>(backendApiRoutes.auth.profile, async (request, reply) => this.handlePatchProfileName(request, reply));
+  server.patch<{ Body: PatchProfileNameData }>(backendApiRoutes.auth.profile, { preHandler: server.authenticateWithSupabase }, async (request, reply) => this.handlePatchProfileName(request, reply));
   server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => this.handleLogin(server, request, reply));
   server.post<{ Body: RegisterProfileData }>(backendApiRoutes.auth.register, async (request, reply) => this.handleRegister(server, request, reply));
-  server.get(backendApiRoutes.auth.me, async (request, reply) => this.handleGetCurrentProfile(request, reply));
+  server.get(backendApiRoutes.auth.me, { preHandler: server.authenticateWithSupabase }, async (request, reply) => this.handleGetCurrentProfile(request, reply));
  }
 
  // -- Handler --------------------------------------------------------------------
- private getSupabaseAccessToken(request: FastifyRequest): string | null {
-  const header = request.headers[RequestHeader.SupabaseAccessToken.toLowerCase()];
-
-  if (typeof header === 'string' && header.trim()) {
-   return header.trim();
-  } /* else -- invalid header format */
-
-  if (Array.isArray(header) && header[0]?.trim()) {
-   return header[0].trim();
-  } /* else -- invalid array header format */
-
-  return null;
- }
 
  private async handleLogin(server: FastifyInstance, request: FastifyRequest<{ Body: LoginData }>, reply: FastifyReply) {
   try {
@@ -53,14 +40,12 @@ export class AuthController extends Controller {
 
  private async handleGetCurrentProfile(request: FastifyRequest, reply: FastifyReply) {
   try {
-   await request.jwtVerify();
-   const payload = request.user as TokenPayload;
-   const supabaseAccessToken = this.getSupabaseAccessToken(request);
-   if (!supabaseAccessToken) {
+   const authContext = request.authContext;
+   if (!authContext) {
     return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
-   } /* else -- supabase token available */
+   } /* else -- authenticated request context available */
 
-   const result = await this.profileLifecycle.getCurrentProfile(payload.profileId, supabaseAccessToken);
+   const result = await this.profileLifecycle.getCurrentProfile(authContext.payload.profileId, authContext.supabaseClient);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#6bdb681d', 'auth.profile_not_found', ResponseStatus.UNAUTHORIZED);
@@ -69,14 +54,12 @@ export class AuthController extends Controller {
 
  private async handlePatchProfileName(request: FastifyRequest<{ Body: PatchProfileNameData }>, reply: FastifyReply) {
   try {
-   await request.jwtVerify();
-   const payload = request.user as TokenPayload;
-   const supabaseAccessToken = this.getSupabaseAccessToken(request);
-   if (!supabaseAccessToken) {
+   const authContext = request.authContext;
+   if (!authContext) {
     return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
-   } /* else -- supabase token available */
+   } /* else -- authenticated request context available */
 
-   const result = await this.profileLifecycle.patchProfileName(payload.profileId, request.body.name, supabaseAccessToken);
+   const result = await this.profileLifecycle.patchProfileName(authContext.payload.profileId, request.body.name, authContext.supabaseClient);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#a8cf9328', 'entity.profile.update_profile_failed', ResponseStatus.UNAUTHORIZED);
