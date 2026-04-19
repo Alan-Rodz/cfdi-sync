@@ -1,4 +1,5 @@
 import fastifyCors from '@fastify/cors';
+import fastifyJwt from '@fastify/jwt';
 import { createClient } from '@supabase/supabase-js';
 import fastify from 'fastify';
 
@@ -10,7 +11,7 @@ import { getControllers } from './controller';
 // == Constant ====================================================================
 const server = fastify();
 await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
-await server.register(require('@fastify/jwt'), { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
+await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 // == Setup =======================================================================
