@@ -1,11 +1,10 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { backendApiRoutes, logConsoleError, LoginData, Profile, RegisterProfileData, ResponseStatus } from 'common';
+import { backendApiRoutes, LoginData, RegisterProfileData, ResponseStatus } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
 
 import { Controller } from '../Controller';
-import { ControllerResponse } from '../type';
 import { AuthControllerDependencies, TokenPayload } from './type';
 
 // ********************************************************************************
@@ -22,61 +21,38 @@ export class AuthController extends Controller {
 
  // -- Public ---------------------------------------------------------------------
  public async addRoutes(server: FastifyInstance) {
+  server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => this.handleLogin(server, request, reply));
+  server.post<{ Body: RegisterProfileData }>(backendApiRoutes.auth.register, async (request, reply) => this.handleRegister(server, request, reply));
+  server.get(backendApiRoutes.auth.me, async (request, reply) => this.handleGetCurrentProfile(request, reply));
+ }
 
-  // -- Login ---------------------------------------------------------------------
-  server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => {
-   try {
-    const result = await this.profileLifecycle.login(request.body, (payload) => server.jwt.sign(payload));
-    if (result.status !== ResponseStatus.SUCCESS) {
-     const response: ControllerResponse = { data: null, message: result.message };
-     return reply.status(result.status).send(response);
-    } /* else -- login successful */
+ // -- Handler --------------------------------------------------------------------
+ private async handleLogin(server: FastifyInstance, request: FastifyRequest<{ Body: LoginData }>, reply: FastifyReply) {
+  try {
+   const result = await this.profileLifecycle.login(request.body, (payload) => server.jwt.sign(payload));
+   return this.sendServiceResult(reply, result);
+  } catch (error) {
+   return this.sendUnexpectedError(reply, error, '#d32322a1', 'auth.login_failed');
+  }
+ }
 
-    const response: ControllerResponse<Profile> = { data: result.data, message: result.message, token: result.token };
-    return reply.send(response);
-   } catch (error) {
-    logConsoleError(error, '#d32322a1')
-    const response: ControllerResponse = { data: null, message: this.t('auth.login_failed') };
-    return reply.status(ResponseStatus.ERROR).send(response);
-   }
-  });
+ private async handleRegister(server: FastifyInstance, request: FastifyRequest<{ Body: RegisterProfileData }>, reply: FastifyReply) {
+  try {
+   const result = await this.profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
+   return this.sendServiceResult(reply, result, [ResponseStatus.CREATED]);
+  } catch (error) {
+   return this.sendUnexpectedError(reply, error, '#cd7ebd08', 'auth.registration_failed');
+  }
+ }
 
-  // -- Register ------------------------------------------------------------------
-  server.post<{ Body: RegisterProfileData }>(backendApiRoutes.auth.register, async (request, reply) => {
-   try {
-    const result = await this.profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
-    if (result.status !== ResponseStatus.CREATED) {
-     const response: ControllerResponse = { data: null, message: result.message };
-     return reply.status(result.status).send(response);
-    } /* else -- registration successful */
-
-    const response: ControllerResponse<Profile> = { data: result.data, message: result.message, token: result.token };
-    return reply.status(ResponseStatus.CREATED).send(response);
-   } catch (error) {
-    logConsoleError(error, '#cd7ebd08')
-    const response: ControllerResponse = { data: null, message: this.t('auth.registration_failed') };
-    return reply.status(ResponseStatus.ERROR).send(response);
-   }
-  });
-
-  // -- Get Current Profile -------------------------------------------------------
-  server.get(backendApiRoutes.auth.me, async (request, reply) => {
-   try {
-    await request.jwtVerify();
-    const payload = request.user as TokenPayload;
-    const result = await this.profileLifecycle.getCurrentProfile(payload.profileId);
-    if (result.status !== ResponseStatus.SUCCESS) {
-     const response: ControllerResponse = { data: null, message: result.message };
-     return reply.status(result.status).send(response);
-    } /* else -- profile loaded */
-
-    const response: ControllerResponse<Profile> = { data: result.data, message: result.message };
-    return reply.send(response);
-   } catch (error) {
-    logConsoleError(error, '#6bdb681d')
-    const response: ControllerResponse = { data: null, message: this.t('auth.profile_not_found') };
-    return reply.status(ResponseStatus.UNAUTHORIZED).send(response);
-   }
-  });
+ private async handleGetCurrentProfile(request: FastifyRequest, reply: FastifyReply) {
+  try {
+   await request.jwtVerify();
+   const payload = request.user as TokenPayload;
+   const result = await this.profileLifecycle.getCurrentProfile(payload.profileId);
+   return this.sendServiceResult(reply, result);
+  } catch (error) {
+   return this.sendUnexpectedError(reply, error, '#6bdb681d', 'auth.profile_not_found', ResponseStatus.UNAUTHORIZED);
+  }
  }
 }

@@ -15,7 +15,6 @@ const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process
 
 // == Setup =======================================================================
 const controllers = getControllers({ client: supaBaseClient, t: englishTranslationFunction });
-
 for (const controller of controllers) {
  await controller.addRoutes(server);
 }
