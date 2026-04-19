@@ -2,6 +2,7 @@
  "auth": {
   "already_got_account": "Already have an account?",
   "confirm_password": "Confirm Password",
+  "failed_to_create_profile": "Failed to create profile",
   "failed_to_fetch_profile": "Failed to fetch user profile",
   "forgot_password": "Forgot Password?",
   "invalid_credentials": "Invalid credentials",
@@ -10,10 +11,12 @@
   "login_successful": "Login successful",
   "no_account_yet": "Don't have an account yet?",
   "password": "Password",
+  "profile_not_found": "Profile not found",
   "recover_password": "Recover Password",
   "recover_password_description": "Enter your email address to receive a password recovery link",
   "register": "Register",
-  "registration_failed": "Registration failed"
+  "registration_failed": "Registration failed",
+  "registration_successful": "Registration successful"
  },
  "common": {
   "email": "Email",

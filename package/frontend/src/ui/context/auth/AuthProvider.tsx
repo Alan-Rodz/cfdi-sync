@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     } /* else -- no data or no token */
 
    } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : t('common.login_failed');
+    const errorMessage = err instanceof Error ? err.message : t('auth.login_failed');
     setError(errorMessage);
     throw err;
    } finally {
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     } /* else -- no data or no token */
 
    } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : t('common.registration_failed');
+    const errorMessage = err instanceof Error ? err.message : t('auth.registration_failed');
     setError(errorMessage);
     throw err;
    } finally {
