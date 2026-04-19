@@ -25,13 +25,21 @@ const RecoverPasswordPage = () => {
 
  // -- UI -------------------------------------------------------------------------
  return (
-  <Container className='flex h-[70vh] items-center' component='main' maxWidth='xs'>
-   <Box className='w-full'>
-    <Typography className='mb-2 text-center' variant='h5'>{t('auth.recover_password')}</Typography>
-    <Typography className='mb-3 text-center' variant='body2'>{t('auth.recover_password_description')}</Typography>
+  <Container
+   component='main'
+   maxWidth='xs'
+   sx={{
+    alignItems: 'center',
+    display: 'flex',
+    minHeight: '70vh',
+   }}
+  >
+   <Box sx={{ width: 1 }}>
+    <Typography sx={{ mb: 2, textAlign: 'center' }} variant='h5'>{t('auth.recover_password')}</Typography>
+    <Typography sx={{ mb: 3, textAlign: 'center' }} variant='body2'>{t('auth.recover_password_description')}</Typography>
 
     <form onSubmit={handleSubmit(onSubmit)}>
-     <Box className='flex flex-col gap-2'>
+     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <TextField
        {...register(recoverPasswordSchemaKeys.email)}
        error={!!errors.email}
@@ -42,14 +50,22 @@ const RecoverPasswordPage = () => {
       />
 
       <Button
-       className='p-3'
        disabled={isSubmitting}
+       sx={{ p: 3 }}
        type='submit'
       >
        {t('common.send_email')}
       </Button>
 
-      <Box className='flex flex-col gap-1 items-center mt-2'>
+      <Box
+       sx={{
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        mt: 2,
+       }}
+      >
        <Link to={frontendRoutes.nonAuthed.login.index}><Button>{t('auth.already_got_account')}</Button></Link>
        <Link to={frontendRoutes.nonAuthed.register}><Button>{t('auth.no_account_yet')}</Button></Link>
       </Box>

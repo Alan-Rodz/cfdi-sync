@@ -1,3 +1,4 @@
+import { Box, Typography } from '@mui/material';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { frontendRoutes } from 'common';
@@ -7,9 +8,9 @@ import { ensureProfileIs } from '../guard';
 // ********************************************************************************
 // == Component ===================================================================
 const DashboardPage = () =>
- <div className='p-8'>
-  <h1>Dashboard</h1>
- </div>;
+ <Box sx={{ p: 8 }}>
+  <Typography variant='h3'>Dashboard</Typography>
+ </Box>;
 
 // == Export ======================================================================
 export const Route = createFileRoute(`${frontendRoutes.authed.dashboard.index}/`)({

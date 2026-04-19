@@ -37,13 +37,29 @@ const LoginPage = () => {
  // -- UI -------------------------------------------------------------------------
  const disabled = isLoading || isSubmitting;
  return (
-  <Container className='flex h-[70vh] items-center' component='main' maxWidth='xs'>
-   <Box className='w-full'>
+  <Container
+   component='main'
+   maxWidth='xs'
+   sx={{
+    alignItems: 'center',
+    display: 'flex',
+    minHeight: '70vh',
+   }}
+  >
+   <Box sx={{ width: 1 }}>
     <form onSubmit={handleSubmit(onSubmit)}>
-     <Box className='flex flex-col gap-2'>
+     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {
        (errors.root || authError) && (
-        <Box className='bg-red-500 p-2 rounded text-white text-sm'>
+        <Box
+         sx={{
+          backgroundColor: 'error.main',
+          borderRadius: 1,
+          color: 'error.contrastText',
+          fontSize: (theme) => theme.typography.body2.fontSize,
+          p: 2,
+         }}
+        >
          {errors.root?.message || authError}
         </Box>
        )
@@ -70,14 +86,22 @@ const LoginPage = () => {
       />
 
       <Button
-       className='p-3'
        disabled={disabled}
+       sx={{ p: 3 }}
        type='submit'
       >
        {disabled ? t('common.loading') : t('auth.login')}
       </Button>
 
-      <Box className='flex flex-col gap-1 items-center mt-2'>
+      <Box
+       sx={{
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        mt: 2,
+       }}
+      >
        <Link to={frontendRoutes.nonAuthed.register}><Button>{t('auth.no_account_yet')}</Button></Link>
        <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('auth.forgot_password')}</Button></Link>
       </Box>

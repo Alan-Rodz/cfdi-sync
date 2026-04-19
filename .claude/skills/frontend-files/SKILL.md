@@ -7,7 +7,7 @@ description: Frontend file conventions for the repo. Use this skill whenever cre
 
 Use this skill for TSX and frontend-facing TS files in `package/frontend`. 
 
-Always follow the repo-wide rules from `../general-guidelines/SKILL.md` first. This skill adds frontend-specific structure on top.
+Always follow the repo-wide rules from `../general-guidelines/SKILL.md` first. This skill adds frontend-specific structure on top and assumes frontend styling is expressed in JSX with Material UI `sx` props.
 
 ## 1. Scope
 
@@ -112,34 +112,37 @@ Inside React components, keep a predictable progression:
 
 This matters because it keeps files easy to scan and makes diffs more predictable.
 
-## 6. Tailwind CSS And className Conventions
+## 6. Material UI `sx` Conventions
 
-Frontend styling uses **Tailwind CSS v4** instead of Material UI `sx` props or inline `style` objects.
+Frontend styling uses Material UI `sx` props in JSX instead of Tailwind utility classes.
 
-**className First:**
+**Use `sx` on MUI components:**
 
-- Always place `className` as the first prop on JSX elements.
-- Tailwind class names should be alphabetically ordered left-to-right within the string.
-- Prefer longer, more descriptive class names for clarity over abbreviations.
+- Prefer `sx` over Tailwind `className` strings for layout, spacing, and visual styling on Material UI components.
+- Keep `sx` object keys alphabetized top-to-bottom when practical.
+- Prefer theme-aware values such as palette tokens and numeric spacing units over raw CSS literals when MUI already supports them.
 
 **Example:**
 
 ```tsx
-// Good: className first, classes alphabetically ordered
+// Good: layout expressed through sx with stable key ordering
+<Box
+  sx={{
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    mt: 2,
+  }}
+>
+  {children}
+</Box>
+
+// Avoid: Tailwind utility strings for primary styling
 <Box className="flex flex-col gap-2 items-center mt-2">
   {children}
 </Box>
-
-// Avoid: className not first, or unordered classes
-<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-  {children}
-</Box>
 ```
-
-**Alphabetical Ordering:**
-
-- Tailwind utilities should be sorted alphabetically within `className` (e.g., `flex flex-col gap-2 items-center mt-2` not `flex items-center flex-col mt-2 gap-2`).
-- This makes diffs stable and class usage predictable.
 
 ## 7. JSX Props Ordering
 
@@ -152,22 +155,22 @@ Order JSX props consistently from left to right:
 **Example:**
 
 ```tsx
-// Good: className first, then alphabetical
+// Good: alphabetical when className is absent
 <TextField
-  className="w-full"
   error={!!errors.email}
   fullWidth
   helperText={errors.email?.message}
   label={t('common.email')}
+  sx={{ width: 1 }}
   type="email"
   {...register('email')}
 />
 
-// Avoid: className not first, or unordered
+// Avoid: Tailwind className for component styling
 <TextField
+  className="w-full"
   error={!!errors.email}
   label={t('common.email')}
-  className="w-full"
   {...register('email')}
 />
 ```
@@ -256,10 +259,10 @@ Before finalizing a frontend file, confirm:
 4. State/effects/handlers/UI appear in a predictable order.
 5. Export placement matches the repo pattern for that file type.
 6. JSX is readable and not overloaded with inline logic.
-7. **All `className` props come first** on JSX elements.
-8. **Tailwind classes within `className` are alphabetically ordered.**
+7. Material UI styling is expressed with `sx` props instead of Tailwind utility classes.
+8. `sx` object keys are stable and alphabetized when practical.
 9. **All other JSX props are alphabetically ordered** after `className`.
-10. No `sx` props or inline `style` objects—use Tailwind `className` instead.
+10. Avoid inline `style` objects when `sx` already expresses the same intent clearly.
 
 ## Examples
 
@@ -283,9 +286,9 @@ export const ExampleComponent: FC<Props> = ({ label, value }) => {
 
  // -- UI -------------------------------------------------------------------------
  return (
-  <div className="flex items-center gap-2" onClick={handleClick}>
+  <Box onClick={handleClick} sx={{ alignItems: 'center', display: 'flex', gap: 2 }}>
    {label}: {value}
-  </div>
+  </Box>
  );
 };
 ```
@@ -294,27 +297,38 @@ export const ExampleComponent: FC<Props> = ({ label, value }) => {
 
 ```ts
 const SomePage = async () => {
- return <div className="p-8" />;
+ return <Box sx={{ p: 8 }} />;
 };
 
 // == Export ======================================================================
 export default SomePage;
 ```
 
-### Example: JSX prop order with Tailwind
+### Example: JSX prop order with `sx`
 
 ```tsx
-// Good: className first, then other props alphabetically
+// Good: props stay predictable and sx keys are stable
 <Container
-  className="flex h-[70vh] items-center"
   component="main"
   maxWidth="xs"
+  sx={{
+    alignItems: 'center',
+    display: 'flex',
+    minHeight: '70vh',
+  }}
 >
   {children}
 </Container>
 
-// Good: all classes alphabetically ordered
-<Box className="flex flex-col gap-1 items-center mt-2">
+<Box
+  sx={{
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+    mt: 2,
+  }}
+>
   {children}
 </Box>
 ```

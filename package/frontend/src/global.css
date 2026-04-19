@@ -1,29 +1,9 @@
-@layer theme, base, mui, components, utilities;
-@import 'tailwindcss';
-
-@theme inline {
- /* Minimal Material UI token bridge for Tailwind utility usage */
- --color-primary: var(--mui-palette-primary-main);
- --color-secondary: var(--mui-palette-secondary-main);
- --color-background-default: var(--mui-palette-background-default);
- --color-background-paper: var(--mui-palette-background-paper);
- --color-text-primary: var(--mui-palette-text-primary);
- --color-text-secondary: var(--mui-palette-text-secondary);
-
- --font-h1: var(--mui-font-h1);
- --font-body1: var(--mui-font-body1);
+html,
+body,
+#root {
+ height: 100%;
 }
 
-@layer base {
- h1 {
-  font: var(--mui-font-h1);
- }
-
- body {
-  font: var(--mui-font-body1);
- }
-}
-
-@utility typography-* {
- font: --value(--font-*);
+body {
+ margin: 0;
 }

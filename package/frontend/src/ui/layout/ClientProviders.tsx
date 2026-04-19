@@ -1,5 +1,4 @@
-import { createTheme, CssBaseline, GlobalStyles, ThemeProvider, type Theme } from '@mui/material';
-import { StyledEngineProvider } from '@mui/material/styles';
+import { createTheme, CssBaseline, ThemeProvider, type Theme } from '@mui/material';
 import type { FC, PropsWithChildren } from 'react';
 
 import { appColors } from '../constant/color';
@@ -34,14 +33,11 @@ const darkTheme: Theme = createTheme({
 
 // == Component ===================================================================
 export const ClientProviders: FC<PropsWithChildren> = ({ children }) =>
- <StyledEngineProvider enableCssLayer>
-  <GlobalStyles styles='@layer theme, base, mui, components, utilities;' />
-  <ThemeProvider theme={darkTheme}>
-   <CssBaseline />
-   <LocaleProvider>
-    <AuthProvider>
-     {children}
-    </AuthProvider>
-   </LocaleProvider>
-  </ThemeProvider>
- </StyledEngineProvider>;
+ <ThemeProvider theme={darkTheme}>
+  <CssBaseline />
+  <LocaleProvider>
+   <AuthProvider>
+    {children}
+   </AuthProvider>
+  </LocaleProvider>
+ </ThemeProvider>;

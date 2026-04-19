@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
@@ -17,16 +17,26 @@ const RootLayout = () => {
  // -- UI -------------------------------------------------------------------------
  return (
   <>
-   <div>
-    <nav className='border-[#ccc] border-b p-4 flex gap-4 justify-end'>
+   <Box>
+    <Box
+     component='nav'
+     sx={{
+      borderBottom: 1,
+      borderColor: 'divider',
+      display: 'flex',
+      gap: 2,
+      justifyContent: 'flex-end',
+      p: 4,
+     }}
+    >
      <Link to={frontendRoutes.nonAuthed.landing_page}><Button>Landing page</Button></Link>
      {
       isAuthenticated
        ? <Link to={frontendRoutes.nonAuthed.logout}><Button>Log out</Button></Link>
        : <Link to={frontendRoutes.nonAuthed.login.index}><Button>Login</Button></Link>
      }
-    </nav>
-   </div>
+    </Box>
+   </Box>
    <Outlet />
    <TanStackRouterDevtools />
   </>
