@@ -1,49 +1,22 @@
-import fastify from 'fastify'
+import fastifyCors from '@fastify/cors';
+import fastify from 'fastify';
 
-type IQuerystring = {
- username: string;
- password: string;
-}
+import { registerAuthRoutes } from './auth';
 
-type IHeaders = {
- 'h-Custom': string;
-}
+// ********************************************************************************
+// == Constant ====================================================================
+const server = fastify();
+await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
 
-type IReply = {
- 200: { success: boolean };
- 302: { url: string };
- '4xx': { error: string };
-}
+// == Setup =======================================================================
+await registerAuthRoutes(server);
 
-const server = fastify()
+// == Listen ======================================================================
+server.listen({ port: Number(process.env.PORT) }, (error, address) => {
+ if (error) {
+  console.error(error);
+  process.exit(1);
+ } /* else -- no error */
 
-server.get('/ping', async (request, reply) => {
- return 'pong\n'
-})
-
-server.get<{
- Querystring: IQuerystring,
- Headers: IHeaders,
- Reply: IReply
-}>('/auth', async (request, reply) => {
- const { username, password } = request.query
- const customerHeader = request.headers['h-Custom']
- // do something with request data
-
- // chaining .statusCode/.code calls with .send allows type narrowing. For example:
- // this works
- reply.code(200).send({ success: true });
- // but this gives a type error
- reply.code(200).send('uh-oh');
- // it even works for wildcards
- reply.code(404).send({ error: 'Not found' });
- return { success: true }
-})
-
-server.listen({ port: 8080 }, (err, address) => {
- if (err) {
-  console.error(err)
-  process.exit(1)
- }
- console.log(`Server listening at ${address}`)
-})
+ console.log(`#cb4ebf33 Server listening at ${address}`);
+});
