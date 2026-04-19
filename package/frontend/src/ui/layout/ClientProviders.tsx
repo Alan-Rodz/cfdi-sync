@@ -3,6 +3,7 @@ import { StyledEngineProvider } from '@mui/material/styles';
 import type { FC, PropsWithChildren } from 'react';
 
 import { appColors } from '../constant/color';
+import { AuthProvider } from '../context/auth/AuthProvider';
 import { LocaleProvider } from '../context/locale/LocaleProvider';
 
 // ********************************************************************************
@@ -37,8 +38,10 @@ export const ClientProviders: FC<PropsWithChildren> = ({ children }) =>
   <GlobalStyles styles='@layer theme, base, mui, components, utilities;' />
   <ThemeProvider theme={darkTheme}>
    <CssBaseline />
-   <LocaleProvider>
-    {children}
-   </LocaleProvider>
+   <AuthProvider>
+    <LocaleProvider>
+     {children}
+    </LocaleProvider>
+   </AuthProvider>
   </ThemeProvider>
  </StyledEngineProvider>;
