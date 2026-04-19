@@ -18,18 +18,19 @@ await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { exp
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 const loggerPort = new Logger(supaBaseClient, { scope: 'General' });
-const profileAuthPort = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));
-const profileRepositoryPort = new SupabaseProfileRepository(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' }));
+const profileAuth = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));
+const profileRepository = new SupabaseProfileRepository(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' }));
 
 // == Setup =======================================================================
 const controllers = getControllers({
  auth: {
-  profileAuthPort,
-  profileRepositoryPort,
+  profileAuthPort: profileAuth,
+  profileRepositoryPort: profileRepository,
  },
  loggerPort,
  t: englishTranslationFunction,
 });
+
 for (const controller of controllers) {
  await controller.addRoutes(server);
 }

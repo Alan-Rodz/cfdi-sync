@@ -14,6 +14,7 @@ export type RouterContext = { isAuthenticated: boolean; isLoading: boolean; };
 const RootLayout = () => {
  const { isAuthenticated } = useAuth();
 
+ // -- UI -------------------------------------------------------------------------
  return (
   <>
    <div>
