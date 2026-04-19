@@ -1,14 +1,9 @@
-
 // ********************************************************************************
 // == Constant ====================================================================
 export const REDIRECT_KEYWORD = 'redirect';
 
 // == Web =========================================================================
-const apiRouter = {} as const;
-
 export const webRouter = {
- api: apiRouter,
-
  authed: {
   dashboard: {
    index: `/dashboard`,

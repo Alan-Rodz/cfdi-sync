@@ -6,3 +6,4 @@ export * from './locale';
 export * from './misc';
 export * from './request';
 export * from './util';
+export * from './webRoute';
