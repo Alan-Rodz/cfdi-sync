@@ -56,7 +56,8 @@ for (const controller of controllers) {
 }
 
 // == Listen ======================================================================
-server.listen({ port: Number(process.env.PORT) }, (error, address) => {
+// Railway/container deployments must bind all interfaces so the platform proxy can reach Fastify.
+server.listen({ host: '0.0.0.0', port: Number(process.env.PORT) }, (error, address) => {
  if (error) {
   console.error(error);
   process.exit(1);
