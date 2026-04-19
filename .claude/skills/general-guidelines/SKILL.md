@@ -1,6 +1,6 @@
 ---
 name: general-guidelines
-description: Repo-wide coding conventions for the repo. Use this skill whenever creating or editing TypeScript, TSX, or SQL in this repository, including backend files in `package/backend/src/**`. Apply it even when the user does not explicitly ask for style changes, so new code stays consistent with separators, import ordering, Supabase table constants, SQL source-of-truth patterns, backend controller/service layering, early-return control flow, and alphabetical ordering conventions.
+description: Repo-wide coding conventions for the repo. Use this skill whenever creating or editing TypeScript, TSX, or SQL in this repository, including backend files in `package/backend/src/**`. Apply it even when the user does not explicitly ask for style changes, so new code stays consistent with separators, import ordering, Supabase table constants, SQL source-of-truth patterns, backend ports/adapters boundaries, controller/service layering, early-return control flow, and alphabetical ordering conventions.
 ---
 
 # General Guidelines
@@ -199,7 +199,22 @@ For backend files in `package/backend/src/**`:
 - Construct/inject service dependencies in controller constructor, not in `addRoutes`.
 - Keep service logic in service classes and HTTP response mapping in controllers.
 
-## 10. Additional Patterns To Preserve
+## 10. Backend Ports And Adapters
+
+For backend services in `package/backend/src/**`, follow these boundaries:
+
+- Define capability contracts as `*Port` types in feature-local files (for example `service/entity/profile/type.ts`).
+- Keep use case services depending on ports (`ProfileRepositoryPort`, `ProfileAuthPort`) instead of framework clients.
+- Keep concrete client usage (for example Supabase query/auth calls) inside adapter classes (for example `SupabaseProfileRepository`, `SupabaseProfileAuth`).
+- Keep app bootstrap (`package/backend/src/index.ts`) as the composition root where adapters are constructed and injected.
+
+For controller dependencies:
+
+- Keep `ControllerDependencies` generic and cross-controller only (currently translation function `t`).
+- Define feature-specific controller dependency types (for example `AuthControllerDependencies`) that extend base dependencies.
+- In controller registry (`package/backend/src/controller/index.ts`), use a registry dependency shape with feature sections (for example `auth`) and map each section to its controller.
+
+## 11. Additional Patterns To Preserve
 
 - Keep barrel exports (`index.ts`) updated when adding new modules used cross-package.
 - Prefer typed schema key objects such as `postAmenitySchemaKeys` to avoid string literals spread across files.
@@ -207,7 +222,7 @@ For backend files in `package/backend/src/**`:
 - Match local indentation/spacing style of the file you are editing.
 - In SQL and TS, follow neighboring casing conventions (`NOW()` vs `now()`) unless doing a deliberate normalization pass.
 
-## 11. Pre-Commit Self-Check
+## 12. Pre-Commit Self-Check
 
 Before finalizing edits, confirm:
 
@@ -218,6 +233,16 @@ Before finalizing edits, confirm:
 5. SQL changes remain source of truth and timestamp conventions are respected.
 6. Branching uses early returns and explicit `else` intent where helpful.
 7. New exports are wired through relevant barrel files.
+8. Services depend on `*Port` interfaces and not directly on Supabase clients.
+9. Supabase-specific code stays in adapter classes and bootstrap wiring.
+10. `ControllerDependencies` remains generic; feature dependencies stay in feature controller types.
+
+## 13. Architecture Glossary
+
+- **Port**: A feature-level interface/contract that defines what the application needs (for example `ProfileRepositoryPort`) without binding to a specific infrastructure client.
+- **Adapter**: A concrete implementation of a port using a specific technology (for example `SupabaseProfileRepository`, `SupabaseProfileAuth`).
+- **Composition Root**: The app bootstrap location where adapters are instantiated and injected into services/controllers (for example `package/backend/src/index.ts`).
+- **Feature Dependency Scope**: The rule that feature-specific dependencies belong to feature controller types (`AuthControllerDependencies`) and not to generic shared types (`ControllerDependencies`).
 
 ## Examples
 

@@ -1,11 +1,11 @@
 ---
-name: backend-routes
-description: Backend controller and route conventions for this repo. Use this skill whenever creating or editing Fastify controllers/handlers in `package/backend/src/**`, especially `package/backend/src/controller/**` and backend bootstrap wiring. Apply it for class-based controller structure, dependency injection, controller registry usage, mandatory `ResponseStatus` usage, and predictable handler organization.
+name: backend-controllers
+description: Backend controller and composition conventions for this repo. Use this skill whenever creating or editing Fastify controllers/handlers in `package/backend/src/**`, especially `package/backend/src/controller/**` and backend bootstrap wiring. Apply it for class-based controller structure, feature-scoped dependency injection, controller registry composition, mandatory `ResponseStatus` usage, and predictable handler organization.
 ---
 
 # Backend Controllers
 
-Use this skill for backend controllers, route handlers, and backend registration in `package/backend/src/**`, especially files like `controller/auth/AuthController.ts`.
+Use this skill for backend controllers, route handlers, and backend composition in `package/backend/src/**`, especially files like `controller/auth/AuthController.ts`.
 
 Always follow `../general-guidelines/SKILL.md` first. This skill adds backend controller and route specifics.
 
@@ -35,12 +35,18 @@ Constructor conventions:
 - Call `super(dependencies)`.
 - Build or assign controller-owned service dependencies in constructor.
 - Prefer optional dependency injection for testability (for example `profileLifecycle?: ProfileLifecycle`).
+- Keep `ControllerDependencies` generic (cross-controller only) and place feature ports/services only in feature-specific dependency types.
 
 Route registration conventions:
 
 - `addRoutes` should stay thin and map routes to handler methods.
 - Route business control flow should live in private handler methods.
 - Reuse base controller helpers for mapping service results and unexpected errors.
+
+Registry composition conventions:
+
+- In `controller/index.ts`, use a controller-registry dependency type that contains shared dependencies plus feature sections (for example `auth`).
+- Map feature sections to controller constructors explicitly, rather than typing the whole registry as one controller's dependency type.
 
 ## 3. File Section Order
 
@@ -159,3 +165,5 @@ Before finalizing backend controller edits, confirm:
 8. Line wrapping is intentional; concise statements remain single-line.
 9. Error branches return early and keep nesting shallow.
 10. Message keys and response payload shape stay consistent.
+11. `ControllerDependencies` remains generic and does not include feature-specific ports.
+12. Controller registry dependencies are grouped by feature and mapped explicitly per controller.
