@@ -15,7 +15,7 @@ import { Logger } from './service/logger/Logger';
 // ********************************************************************************
 // == Constant ====================================================================
 const server = fastify();
-await server.register(fastifyCors, { methods: [RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH], origin: process.env.FRONTEND_URL! });
+await server.register(fastifyCors, { methods: [RequestMethod.DELETE, RequestMethod.GET, RequestMethod.OPTIONS, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH], origin: process.env.FRONTEND_URL! });
 await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 
 // == Custom Decoration ===========================================================
