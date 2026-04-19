@@ -1,4 +1,4 @@
-import { backendApiRoutes, logConsoleError, RequestContentType, RequestHeader, RequestMethod, type ApiResponse, type LoginData, type Profile, type RegisterUserData } from 'common';
+import { backendApiRoutes, logConsoleError, RequestContentType, RequestHeader, RequestMethod, type ApiResponse, type LoginData, type Profile, type RegisterProfileData } from 'common';
 
 import { WEBSITE_NAME } from '@/constant/website';
 
@@ -57,7 +57,7 @@ export const authService = {
   authService.clearProfile();
  },
 
- register: async (userData: RegisterUserData): Promise<ProfileResponse> => {
+ register: async (userData: RegisterProfileData): Promise<ProfileResponse> => {
   const response = await fetch(`${API_BASE}${backendApiRoutes.auth.register}`, {
    body: JSON.stringify(userData),
    headers: { [RequestHeader.ContentType]: RequestContentType.Json },

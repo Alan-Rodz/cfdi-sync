@@ -8,11 +8,11 @@ import { getPasswordSchema } from '../misc/password';
 
 // ********************************************************************************
 // == Type ========================================================================
-export type RegisterUserData = z.infer<ReturnType<typeof getRegisterUserSchema>>;
-export type RegisterUserResponseData = ApiResponse & { profile?: Profile; };
+export type RegisterProfileData = z.infer<ReturnType<typeof getRegisterUserSchema>>;
+export type RegisterProfileResponseData = ApiResponse<Profile | null>;
 
 // == Constant ====================================================================
-export const registerUserSchemaKeys: { [key in keyof RegisterUserData]: key; } = {
+export const registerUserSchemaKeys: { [key in keyof RegisterProfileData]: key; } = {
  email: 'email',
  password: 'password',
  passwordConfirmation: 'passwordConfirmation',

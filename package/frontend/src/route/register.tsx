@@ -3,7 +3,7 @@ import { Box, Button, Container, TextField } from '@mui/material';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import { getRegisterUserSchema, registerUserSchemaKeys, frontendRoutes, type RegisterUserData } from 'common';
+import { getRegisterUserSchema, registerUserSchemaKeys, frontendRoutes, type RegisterProfileData } from 'common';
 
 import { useAuth } from '@/ui/hook/useAuth';
 import { useLocale } from '@/ui/hook/useLocale';
@@ -16,15 +16,15 @@ const RegisterPage = () => {
  const { register: registerAuth, isLoading, error: authError } = useAuth();
 
  // -- Form -----------------------------------------------------------------------
- const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RegisterUserData>({
+ const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RegisterProfileData>({
   defaultValues: { email: '', password: '', passwordConfirmation: '' },
   resolver: zodResolver(getRegisterUserSchema(t)),
  });
 
  // -- Handler --------------------------------------------------------------------
- const onSubmit = async (data: RegisterUserData) => {
+ const onSubmit = async (data: RegisterProfileData) => {
   try {
-   await registerAuth(data.email, data.password, data.passwordConfirmation);
+   await registerAuth(data);
    navigate({ to: frontendRoutes.authed.dashboard.index });
   } catch (error) {
    const errorMessage = error instanceof Error ? error.message : t('common.registration_failed');

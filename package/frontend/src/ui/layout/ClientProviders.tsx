@@ -38,10 +38,10 @@ export const ClientProviders: FC<PropsWithChildren> = ({ children }) =>
   <GlobalStyles styles='@layer theme, base, mui, components, utilities;' />
   <ThemeProvider theme={darkTheme}>
    <CssBaseline />
-   <AuthProvider>
-    <LocaleProvider>
+   <LocaleProvider>
+    <AuthProvider>
      {children}
-    </LocaleProvider>
-   </AuthProvider>
+    </AuthProvider>
+   </LocaleProvider>
   </ThemeProvider>
  </StyledEngineProvider>;
