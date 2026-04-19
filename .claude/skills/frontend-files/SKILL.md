@@ -202,14 +202,51 @@ When a file requires client-only React features in Next app code:
 - Leave a blank line after it before imports.
 - Follow the same separator and section patterns after imports.
 
-## 11. Practical Rules
+## 11. TanStack Router Auth Guards
+
+Auth guarding uses router context, not component-level `useEffect` redirects.
+
+### Router context
+
+`RouterContext` is declared in `route/__root.tsx` and passed to `<RouterProvider context={...} />` in `App.tsx`, which reads it from `useAuth()`:
+
+```ts
+// App.tsx
+const App = () => {
+ const { isAuthenticated, isLoading } = useAuth();
+ return <RouterProvider router={router} context={{ isAuthenticated, isLoading }} />;
+};
+```
+
+`createRouter` must declare a default context matching the shape:
+
+```ts
+const router = createRouter({ routeTree, context: { isAuthenticated: false, isLoading: true } });
+```
+
+### Guard helper
+
+All route-level auth redirects use `ensureProfileIs` from `route/guard.ts`:
+
+```ts
+beforeLoad: ensureProfileIs('loggedIn', frontendRoutes.nonAuthed.login.index),
+// or
+beforeLoad: ensureProfileIs('loggedOut', frontendRoutes.authed.dashboard.index),
+```
+
+- `'loggedIn'` — redirect to the given path if the user is **not** authenticated (protected routes).
+- `'loggedOut'` — redirect to the given path if the user **is** authenticated (login/register/recover routes).
+- Never implement `beforeLoad` inline for auth checks; always use `ensureProfileIs`.
+- Never use `useEffect` + `useNavigate` for auth redirection in route components.
+
+## 12. Practical Rules
 
 - Match the local file’s terse style. Many frontend files here are compact.
 - Use separators to clarify structure, not to make files longer.
 - Preserve inline named export style when it is already the dominant file pattern.
 - Prefer consistency with neighboring files over abstract stylistic purity.
 
-## 12. Self-Check
+## 13. Self-Check
 
 Before finalizing a frontend file, confirm:
 
