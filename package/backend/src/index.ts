@@ -3,7 +3,7 @@ import fastifyJwt from '@fastify/jwt';
 import { createClient } from '@supabase/supabase-js';
 import fastify from 'fastify';
 
-import { Database, englishTranslationFunction } from 'common';
+import { Database, englishTranslationFunction, RequestMethod } from 'common';
 
 import { getControllers } from './controller';
 import { SupabaseProfileAuth } from './service/entity/profile/SupabaseProfileAuth';
@@ -13,7 +13,7 @@ import { Logger } from './service/logger/Logger';
 // ********************************************************************************
 // == Constant ====================================================================
 const server = fastify();
-await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
+await server.register(fastifyCors, { methods: [RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH], origin: process.env.FRONTEND_URL! });
 await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 

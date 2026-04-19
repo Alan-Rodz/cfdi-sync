@@ -6,6 +6,8 @@ import { frontendRoutes } from 'common';
 
 import { useAuth } from '@/ui/hook/useAuth';
 
+import { ensureProfileIs } from '../guard';
+
 // ********************************************************************************
 // == Component ===================================================================
 const ProfilePage = () => {
@@ -66,4 +68,7 @@ const ProfilePage = () => {
 };
 
 // == Export ======================================================================
-export const Route = createFileRoute(frontendRoutes.authed.dashboard.profile)({ component: ProfilePage });
+export const Route = createFileRoute(frontendRoutes.authed.dashboard.index)({
+ beforeLoad: ensureProfileIs('loggedIn', frontendRoutes.nonAuthed.login.index),
+ component: ProfilePage,
+});

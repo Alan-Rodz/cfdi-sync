@@ -116,9 +116,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
    try {
     const response = await authService.updateProfileName(data);
+
     if (response.data) {
      setProfile(response.data);
     } /* else -- nothing to update */
+
    } catch (err) {
     const errorMessage = err instanceof Error ? err.message : t('auth.registration_failed');
     setError(errorMessage);

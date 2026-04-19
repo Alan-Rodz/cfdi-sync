@@ -21,7 +21,6 @@ type Props = {
 const OPEN_DRAWER_WIDTH = 240;
 const CLOSED_DRAWER_WIDTH = 65;
 
-
 // == Component ===================================================================
 export const Sidebar: FC<Props> = ({ drawerDisclosure }) => {
  const { isDrawerOpen, onDrawerOpen, onDrawerClose } = drawerDisclosure;
@@ -75,7 +74,7 @@ const DrawerItems: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onC
 
  // -- UI -------------------------------------------------------------------------
  const menuItems = [
-  { icon: appIcons.profile, label: t('common.my_profile'), href: frontendRoutes.nonAuthed.landing_page },
+  { icon: appIcons.profile, label: t('common.my_profile'), href: frontendRoutes.authed.dashboard.profile },
  ];
  return (
   <List sx={{ padding: 0 }}>
