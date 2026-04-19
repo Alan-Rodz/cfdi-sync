@@ -19,7 +19,6 @@ export type ProfileAuthPort = {
 export type ProfileRepositoryCreateInput = Pick<Profile, 'email' | 'id'>;
 
 export type ProfileRepositoryPort = {
- createProfile(data: ProfileRepositoryCreateInput): Promise<Profile>;
  findProfileByEmail(email: Profile['email']): Promise<Profile | null>;
  findProfileById(profileId: Profile['id']): Promise<Profile | null>;
  isEmailRegistered(email: Profile['email']): Promise<boolean>;

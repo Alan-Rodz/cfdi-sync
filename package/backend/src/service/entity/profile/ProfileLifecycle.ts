@@ -76,16 +76,10 @@ export class ProfileLifecycle {
    return { data: null, message: signUpResult.errorMessage || this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
   } /* else -- user created successfully */
 
-  let profile: Profile;
-  try {
-   profile = await this.profileRepositoryPort.createProfile({
-    email,
-    id: signUpResult.profileId,
-   });
-  } catch (error) {
-   await this.safeLogError('#715588ca Failed to create profile after registration', error);
-   return { data: null, message: this.t('auth.failed_to_create_profile'), status: ResponseStatus.BAD_REQUEST };
-  }
+  const profile = await this.profileRepositoryPort.findProfileById(signUpResult.profileId);
+  if (!profile) {
+   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+  } /* else -- profile created successfully */
 
   const token = createToken({ email: profile.email, profileId: profile.id });
   return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.CREATED, token };

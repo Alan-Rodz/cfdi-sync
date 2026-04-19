@@ -20,24 +20,6 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
  }
 
  // -- Public ---------------------------------------------------------------------
- public async createProfile(data: ProfileRepositoryCreateInput): Promise<Profile> {
-  const { data: createdProfile, error: createdProfileError } = await this.client
-   .from(profileTableName)
-   .insert({
-    [profileTableColumns.email]: data.email,
-    [profileTableColumns.id]: data.id,
-   })
-   .select()
-   .single();
-
-  if (createdProfileError || !createdProfile) {
-   await this.safeLogError('#3225f58a Supabase create profile failed', createdProfileError || { data });
-   throw new Error('#e9a6d017 Failed to create profile');
-  } /* else -- profile created successfully */
-
-  return createdProfile as Profile;
- }
-
  public async findProfileByEmail(email: Profile['email']): Promise<Profile | null> {
   const { data: profileObj, error: profileObjError } = await this.client
    .from(profileTableName)
