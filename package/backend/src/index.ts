@@ -4,7 +4,7 @@ import fastify from 'fastify';
 
 import { Database, englishTranslationFunction } from 'common';
 
-import { AuthController } from './controller/auth';
+import { AuthController } from './controller/auth/AuthController';
 
 // ********************************************************************************
 // == Constant ====================================================================

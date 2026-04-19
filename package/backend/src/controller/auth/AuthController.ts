@@ -2,18 +2,13 @@ import { FastifyInstance } from 'fastify';
 
 import { backendApiRoutes, logConsoleError, LoginData, Profile, RegisterProfileData, ResponseStatus } from 'common';
 
-import { ProfileLifecycle } from '../service/entity/profile/ProfileLifecycle';
+import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
 
-import { Controller } from './Controller';
-import { ControllerResponse } from './type';
+import { Controller } from '../Controller';
+import { ControllerResponse } from '../type';
+import { TokenPayload } from './type';
 
 // ********************************************************************************
-// == Type ========================================================================
-type TokenPayload = {
- email: Profile['email'];
- profileId: Profile['id'];
-}
-
 // == Controller ==================================================================
 export class AuthController extends Controller {
  // -- Public ---------------------------------------------------------------------
