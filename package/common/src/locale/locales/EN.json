@@ -9,6 +9,7 @@
   "login": "Login",
   "login_failed": "Login failed",
   "login_successful": "Login successful",
+  "logout": "Logout",
   "no_account_yet": "Don't have an account yet?",
   "password": "Password",
   "profile_not_found": "Profile not found",
@@ -21,6 +22,7 @@
  "common": {
   "email": "Email",
   "loading": "Loading",
+  "my_profile": "My Profile",
   "send_email": "Send Email"
  },
  "schema": {
