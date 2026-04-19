@@ -68,6 +68,21 @@ Also:
 - Keep a blank line between import groups.
 - Sort imports alphabetically within each group when practical.
 - Preserve known exceptions where file comments explain why sorting is intentionally disabled (for example circular dependency protection).
+- **Prefer single-line imports** over multi-line imports, even for many named exports:
+
+```ts
+// Preferred
+import { LoginData, Profile, profileTableColumns, profileTableName, RegisterUserData } from 'common';
+
+// Avoid
+import {
+ LoginData,
+ Profile,
+ profileTableColumns,
+ profileTableName,
+ RegisterUserData
+} from 'common';
+```
 
 ## 4. Supabase Table Access Pattern
 
