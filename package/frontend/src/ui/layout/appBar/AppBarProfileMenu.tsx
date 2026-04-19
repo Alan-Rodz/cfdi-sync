@@ -1,5 +1,5 @@
 import { Button, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from '@mui/material';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import type { FC } from 'react';
 
 import { frontendRoutes } from 'common';
@@ -19,12 +19,14 @@ type Props = {
 // == Component ===================================================================
 export const AppBarProfileMenu: FC<Props> = ({ disclosure }) => {
  const { isAuthenticated, logout, profile } = useAuth();
+ const navigate = useNavigate();
  const { t } = useLocale();
 
  // -- Handler ---------------------------------------------------------------------
  const handleLogout = () => {
   logout();
   disclosure.handleCloseMenu();
+  navigate({ to: frontendRoutes.nonAuthed.landing_page });
  };
 
  // -- UI -------------------------------------------------------------------------

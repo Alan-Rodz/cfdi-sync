@@ -49,23 +49,23 @@ export const Sidebar: FC<Props> = ({ drawerDisclosure }) => {
     <DrawerItems isOpen={isDrawerOpen} onClose={() => { /* desktop: keep open */ }} />
    </Box>
   );
+ } else {
+  return (
+   <Drawer
+    anchor='left'
+    open={isDrawerOpen}
+    onClose={onDrawerClose}
+    sx={{ '& .MuiDrawer-paper': { backgroundColor: appColors.darPaperBackground, width: OPEN_DRAWER_WIDTH } }}
+   >
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+     <IconButton onClick={onDrawerClose} sx={{ color: appColors.white }}>
+      {appIcons.arrowLeft()}
+     </IconButton>
+    </Box>
+    <DrawerItems isOpen={true} onClose={onDrawerClose} />
+   </Drawer>
+  );
  }
-
- return (
-  <Drawer
-   anchor='left'
-   open={isDrawerOpen}
-   onClose={onDrawerClose}
-   sx={{ '& .MuiDrawer-paper': { backgroundColor: appColors.darPaperBackground, width: OPEN_DRAWER_WIDTH } }}
-  >
-   <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-    <IconButton onClick={onDrawerClose} sx={{ color: appColors.white }}>
-     {appIcons.arrowLeft()}
-    </IconButton>
-   </Box>
-   <DrawerItems isOpen={true} onClose={onDrawerClose} />
-  </Drawer>
- );
 };
 
 // ================================================================================
@@ -79,35 +79,39 @@ const DrawerItems: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onC
  ];
  return (
   <List sx={{ padding: 0 }}>
-   {menuItems.map((item) => (
-    <Link key={item.label} to={item.href} onClick={onClose}>
-     <Tooltip disableHoverListener={isOpen} placement='right' title={item.label}>
-      <ListItem disablePadding>
-       <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
-        <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
-         {item.icon()}
-        </ListItemIcon>
-        {isOpen && <ListItemText primary={item.label} sx={{ color: appColors.white }} />}
-       </ListItemButton>
-      </ListItem>
-     </Tooltip>
-    </Link>
-   ))}
+   {
+    menuItems.map((item) => (
+     <Link key={item.label} style={{ textDecoration: 'none' }} onClick={onClose} to={item.href}>
+      <Tooltip disableHoverListener={isOpen} placement='right' title={item.label}>
+       <ListItem disablePadding>
+        <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
+         <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
+          {item.icon()}
+         </ListItemIcon>
+         {isOpen && <ListItemText primary={item.label} sx={{ color: appColors.white }} />}
+        </ListItemButton>
+       </ListItem>
+      </Tooltip>
+     </Link>
+    ))
+   }
 
-   {isAuthenticated && (
-    <Link to={frontendRoutes.nonAuthed.logout} onClick={onClose}>
-     <Tooltip disableHoverListener={isOpen} placement='right' title='Log out'>
-      <ListItem disablePadding>
-       <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
-        <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
-         {appIcons.logout()}
-        </ListItemIcon>
-        {isOpen && <ListItemText primary='Log out' sx={{ color: appColors.white }} />}
-       </ListItemButton>
-      </ListItem>
-     </Tooltip>
-    </Link>
-   )}
+   {
+    isAuthenticated && (
+     <Link style={{ textDecoration: 'none' }} onClick={onClose} to={frontendRoutes.nonAuthed.logout}>
+      <Tooltip disableHoverListener={isOpen} placement='right' title='Log out'>
+       <ListItem disablePadding>
+        <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
+         <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
+          {appIcons.logout()}
+         </ListItemIcon>
+         {isOpen && <ListItemText primary='Log out' sx={{ color: appColors.white }} />}
+        </ListItemButton>
+       </ListItem>
+      </Tooltip>
+     </Link>
+    )
+   }
   </List>
  );
 };
