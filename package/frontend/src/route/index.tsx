@@ -6,8 +6,8 @@ import { frontendRoutes } from 'common';
 // ********************************************************************************
 // == Component ===================================================================
 const LandingPage = () =>
- <Box sx={{ p: 8 }}>
-  <Typography variant='h3'>Welcome!</Typography>
+ <Box sx={{ padding: '1em' }}>
+  <Typography>Welcome!</Typography>
  </Box>;
 
 // == Export ======================================================================
