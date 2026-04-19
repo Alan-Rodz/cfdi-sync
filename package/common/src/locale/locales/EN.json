@@ -25,6 +25,12 @@
   "my_profile": "My Profile",
   "send_email": "Send Email"
  },
+ "entity": {
+  "profile": {
+   "update_profile_failed": "Failed to update profile",
+   "update_profile_successful": "Profile updated successfully"
+  }
+ },
  "schema": {
   "misc": {
    "array": {

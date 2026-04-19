@@ -55,7 +55,7 @@ export class AuthController extends Controller {
    const result = await this.profileLifecycle.patchProfileName(payload.profileId, request.body.name);
    return this.sendServiceResult(reply, result);
   } catch (error) {
-   return this.sendUnexpectedError(reply, error, '#a8cf9328', 'auth.registration_failed', ResponseStatus.UNAUTHORIZED);
+   return this.sendUnexpectedError(reply, error, '#a8cf9328', 'entity.profile.update_profile_failed', ResponseStatus.UNAUTHORIZED);
   }
  }
 

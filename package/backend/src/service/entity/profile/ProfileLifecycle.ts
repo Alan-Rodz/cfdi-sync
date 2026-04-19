@@ -97,15 +97,16 @@ export class ProfileLifecycle {
 
  public async patchProfileName(profileId: Profile['id'], name: Profile['name']): Promise<ServiceResult<Profile>> {
   if (!name.trim()) {
-   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+   this.loggerPort?.info(`#1964cbf3 Invalid profile name provided ${profileId} - ${name}`);
+   return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };
   } /* else -- valid name */
 
   let profile: Profile | null = null;
   try {
    profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim());
   } catch (error) {
-   await this.safeLogError('#594086af Failed to patch profile name', error);
-   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+   await this.safeLogError('#5afe86f3 Failed to patch profile name', error);
+   return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };
   }
 
   if (!profile) {
