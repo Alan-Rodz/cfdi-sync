@@ -14,5 +14,6 @@ export type LoggerLogOptions = {
 };
 
 export type LoggerPort = {
+ info(message: string, options?: LoggerLogOptions): Promise<void>;
  safeLogError(message: string, error: unknown): Promise<void>;
 };

@@ -53,6 +53,7 @@ export class ProfileLifecycle {
   } /* else -- authentication successful */
 
   const token = createToken({ email: profile.email, profileId: profile.id });
+  await this.safeLogInfo('#4649f23e Login successful', { profileId: profile.id });
   return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS, token };
  }
 
@@ -105,5 +106,13 @@ export class ProfileLifecycle {
  // -- Private --------------------------------------------------------------------
  private async safeLogError(message: string, error: unknown) {
   await this.loggerPort?.safeLogError(message, error);
+ }
+
+ private async safeLogInfo(message: string, context: Record<string, unknown>) {
+  try {
+   await this.loggerPort?.info(message, { context });
+  } catch (error) {
+   await this.safeLogError('#16f119c5 Failed to log login success', error);
+  }
  }
 }
