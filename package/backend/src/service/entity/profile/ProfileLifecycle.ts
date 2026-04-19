@@ -25,6 +25,7 @@ export class ProfileLifecycle extends AuthenticatedService {
   this.client = client;
   this.t = t;
  }
+
  public async initialize(client: SupabaseClient<Database>): Promise<ProfileLifecycle> {
   await this.initializeService(client);
   this.initialized = true;
