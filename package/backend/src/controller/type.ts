@@ -1,6 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-
-import { Database, LocaledTranslationFn } from 'common';
+import { LocaledTranslationFn } from 'common';
 
 // ********************************************************************************
 export type ControllerResponse<T = null> = {
@@ -10,6 +8,5 @@ export type ControllerResponse<T = null> = {
 };
 
 export type ControllerDependencies = {
- client: SupabaseClient<Database>;
  t: LocaledTranslationFn;
 };

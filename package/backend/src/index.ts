@@ -6,6 +6,8 @@ import fastify from 'fastify';
 import { Database, englishTranslationFunction } from 'common';
 
 import { getControllers } from './controller';
+import { SupabaseProfileAuth } from './service/entity/profile/SupabaseProfileAuth';
+import { SupabaseProfileRepository } from './service/entity/profile/SupabaseProfileRepository';
 
 // ********************************************************************************
 // == Constant ====================================================================
@@ -14,8 +16,17 @@ await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
 await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
+const profileAuthPort = new SupabaseProfileAuth(supaBaseClient);
+const profileRepositoryPort = new SupabaseProfileRepository(supaBaseClient);
+
 // == Setup =======================================================================
-const controllers = getControllers({ client: supaBaseClient, t: englishTranslationFunction });
+const controllers = getControllers({
+ auth: {
+  profileAuthPort,
+  profileRepositoryPort,
+ },
+ t: englishTranslationFunction,
+});
 for (const controller of controllers) {
  await controller.addRoutes(server);
 }

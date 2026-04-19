@@ -1,9 +1,7 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { englishTranslationFunction, LocaledTranslationFn, LoginData, Profile, RegisterProfileData, ResponseStatus } from 'common';
 
-import { Database, englishTranslationFunction, LocaledTranslationFn, LoginData, Profile, profileTableColumns, profileTableName, RegisterProfileData, ResponseStatus } from 'common';
-
-import { AuthenticatedService } from '../../AuthenticatedService';
 import { ServiceResult } from '../../type';
+import { ProfileAuthPort, ProfileRepositoryPort } from './type';
 
 // ********************************************************************************
 // == Type ========================================================================
@@ -15,45 +13,38 @@ type TokenPayload = {
 type CreateTokenFn = (payload: TokenPayload) => string;
 
 // == Service =====================================================================
-export class ProfileLifecycle extends AuthenticatedService {
+export class ProfileLifecycle {
  // -- Attribute ------------------------------------------------------------------
+ private readonly profileAuthPort: ProfileAuthPort;
+ private readonly profileRepositoryPort: ProfileRepositoryPort;
  private readonly t: LocaledTranslationFn;
 
  // -- Initialization -------------------------------------------------------------
- constructor(client: SupabaseClient<Database>, t: LocaledTranslationFn = englishTranslationFunction) {
-  super('ProfileLifecycle');
-  this.client = client;
+ constructor(profileAuthPort: ProfileAuthPort, profileRepositoryPort: ProfileRepositoryPort, t: LocaledTranslationFn = englishTranslationFunction) {
+  this.profileAuthPort = profileAuthPort;
+  this.profileRepositoryPort = profileRepositoryPort;
   this.t = t;
- }
-
- public async initialize(client: SupabaseClient<Database>): Promise<ProfileLifecycle> {
-  await this.initializeService(client);
-  this.initialized = true;
-  return this;
  }
 
  // -- Public ---------------------------------------------------------------------
  public async login(data: LoginData, createToken: CreateTokenFn): Promise<ServiceResult<Profile>> {
   const { email, password } = data;
-  const client = this.getClient();
+  const credentials = { email, password };
+  let profile: Profile | null = null;
 
-  const { data: profileObj, error: profileObjError } = await client
-   .from(profileTableName)
-   .select('*')
-   .eq(profileTableColumns.email, email);
-
-  if (profileObjError) {
+  try {
+   profile = await this.profileRepositoryPort.findProfileByEmail(email);
+  } catch {
    return { data: null, message: this.t('auth.failed_to_fetch_profile'), status: ResponseStatus.ERROR };
-  } /* else -- profile query completed */
+  }
 
-  if (!profileObj || profileObj.length === 0) {
+  if (!profile) {
    return { data: null, message: this.t('auth.invalid_credentials'), status: ResponseStatus.UNAUTHORIZED };
   } /* else -- profile found */
 
-  const profile = profileObj[0] as Profile;
-  const { data: authedProfile, error: authedProfileError } = await client.auth.signInWithPassword({ email, password });
+  const signInResult = await this.profileAuthPort.signInWithPassword(credentials);
 
-  if (authedProfileError || !authedProfile) {
+  if (!signInResult.authenticated) {
    return { data: null, message: this.t('auth.invalid_credentials'), status: ResponseStatus.UNAUTHORIZED };
   } /* else -- authentication successful */
 
@@ -62,63 +53,51 @@ export class ProfileLifecycle extends AuthenticatedService {
  }
 
  public async register(data: RegisterProfileData, createToken: CreateTokenFn): Promise<ServiceResult<Profile>> {
-  const { email, password } = data;
-  const client = this.getClient();
+  const { email } = data;
+  let existing = false;
 
-  const { data: existing } = await client
-   .from(profileTableName)
-   .select(profileTableColumns.email)
-   .eq(profileTableColumns.email, email)
-   .limit(1);
+  try {
+   existing = await this.profileRepositoryPort.isEmailRegistered(email);
+  } catch {
+   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+  }
 
-  if (existing && existing.length > 0) {
+  if (existing) {
    return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.CONFLICT };
   } /* else -- profile doesn't exist yet */
 
-  const { data: authProfile, error: authError } = await client.auth.signUp({ email, password });
-  if (authError || !authProfile.user) {
-   return { data: null, message: authError?.message || this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+  const signUpResult = await this.profileAuthPort.signUpWithPassword(data);
+  if (!signUpResult.profileId) {
+   return { data: null, message: signUpResult.errorMessage || this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
   } /* else -- user created successfully */
 
-  const { data: createdProfile, error: createdProfileError } = await client
-   .from(profileTableName)
-   .insert({
-    [profileTableColumns.email]: email,
-    [profileTableColumns.id]: authProfile.user.id,
-   })
-   .select()
-   .single();
-
-  if (createdProfileError || !createdProfile) {
+  let profile: Profile;
+  try {
+   profile = await this.profileRepositoryPort.createProfile({
+    email,
+    id: signUpResult.profileId,
+   });
+  } catch {
    return { data: null, message: this.t('auth.failed_to_create_profile'), status: ResponseStatus.BAD_REQUEST };
-  } /* else -- profile created successfully */
+  }
 
-  const profile = createdProfile as Profile;
   const token = createToken({ email: profile.email, profileId: profile.id });
   return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.CREATED, token };
  }
 
  public async getCurrentProfile(profileId: Profile['id']): Promise<ServiceResult<Profile>> {
-  const client = this.getClient();
+  let profile: Profile | null = null;
 
-  const { data: profile, error } = await client
-   .from(profileTableName)
-   .select('*')
-   .eq(profileTableColumns.id, profileId)
-   .single();
+  try {
+   profile = await this.profileRepositoryPort.findProfileById(profileId);
+  } catch {
+   return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
+  }
 
-  if (error || !profile) {
+  if (!profile) {
    return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
   } /* else -- profile found */
 
-  return { data: profile as Profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
- }
-
- // -- Private --------------------------------------------------------------------
- private getClient() {
-  if (!this.client) { throw new Error('#1642efba ProfileLifecycle client not initialized'); }
-  else { /* else -- client is available */ }
-
-  return this.client;
+  return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
  }
 }

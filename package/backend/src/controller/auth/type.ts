@@ -1,6 +1,7 @@
 import { Profile } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
+import { ProfileAuthPort, ProfileRepositoryPort } from '../../service/entity/profile/type';
 import { ControllerDependencies } from '../type';
 
 // ********************************************************************************
@@ -11,5 +12,7 @@ export type TokenPayload = {
 }
 
 export type AuthControllerDependencies = ControllerDependencies & {
+ profileAuthPort: ProfileAuthPort;
  profileLifecycle?: ProfileLifecycle;
+ profileRepositoryPort: ProfileRepositoryPort;
 };
