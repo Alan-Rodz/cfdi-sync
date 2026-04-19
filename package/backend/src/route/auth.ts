@@ -21,11 +21,8 @@ const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process
 
 // ********************************************************************************
 // == Handler =====================================================================
-export const registerAuthRoutes = async (server: FastifyInstance, t = englishTranslationFunction) => {
- server.register(require('@fastify/jwt'), {
-  secret: process.env.JWT_SECRET,
-  sign: { expiresIn: '7d' }
- });
+export const addAuthRoutes = async (server: FastifyInstance, t = englishTranslationFunction) => {
+ server.register(require('@fastify/jwt'), { secret: process.env.JWT_SECRET, sign: { expiresIn: '7d' } });
 
  // -- Login ----------------------------------------------------------------------
  server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => {

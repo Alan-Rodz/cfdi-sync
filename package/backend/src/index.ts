@@ -1,7 +1,7 @@
 import fastifyCors from '@fastify/cors';
 import fastify from 'fastify';
 
-import { registerAuthRoutes } from './auth';
+import { addAuthRoutes } from './route/auth';
 
 // ********************************************************************************
 // == Constant ====================================================================
@@ -9,7 +9,7 @@ const server = fastify();
 await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
 
 // == Setup =======================================================================
-await registerAuthRoutes(server);
+await addAuthRoutes(server);
 
 // == Listen ======================================================================
 server.listen({ port: Number(process.env.PORT) }, (error, address) => {
