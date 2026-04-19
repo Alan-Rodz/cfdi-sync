@@ -14,6 +14,26 @@ export type Database = {
  }
  public: {
   Tables: {
+   admin_profile: {
+    Row: {
+     profile_id: string
+    }
+    Insert: {
+     profile_id: string
+    }
+    Update: {
+     profile_id?: string
+    }
+    Relationships: [
+     {
+      foreignKeyName: "admin_profile_profile_id_fkey"
+      columns: ["profile_id"]
+      isOneToOne: true
+      referencedRelation: "profile"
+      referencedColumns: ["id"]
+     },
+    ]
+   }
    log: {
     Row: {
      created_at: string
@@ -70,6 +90,7 @@ export type Database = {
      inserted_log_id: string
     }[]
    }
+   is_profile_admin: { Args: { input_profile_id: string }; Returns: boolean }
   }
   Enums: {
    [_ in never]: never
