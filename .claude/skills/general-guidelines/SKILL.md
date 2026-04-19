@@ -1,6 +1,6 @@
 ---
 name: general-guidelines
-description: Repo-wide coding conventions for the repo. Use this skill whenever creating or editing TypeScript, TSX, or SQL in this repository, especially for `package/common`, `package/web`, and `package/lite-web`. Apply it even when the user does not explicitly ask for style changes, so new code stays consistent with separators, import ordering, Supabase table constants, SQL source-of-truth patterns, early-return control flow, and alphabetical ordering conventions.
+description: Repo-wide coding conventions for the repo. Use this skill whenever creating or editing TypeScript, TSX, or SQL in this repository, including backend files in `package/backend/src/**`. Apply it even when the user does not explicitly ask for style changes, so new code stays consistent with separators, import ordering, Supabase table constants, SQL source-of-truth patterns, backend controller/service layering, early-return control flow, and alphabetical ordering conventions.
 ---
 
 # General Guidelines
@@ -188,7 +188,18 @@ When implementing API routes in `web` or `lite-web`:
 
 Avoid redefining schema types locally if an equivalent exists in `common`.
 
-## 9. Additional Patterns To Preserve
+## 9. Backend Controller Architecture
+
+For backend files in `package/backend/src/**`:
+
+- Keep Fastify plugin registration (for example JWT, CORS) in bootstrap (`package/backend/src/index.ts`) instead of inside individual controllers.
+- Use controller registry composition (`package/backend/src/controller/index.ts`) to construct and register controller instances.
+- Prefer class-based controllers that extend the shared `Controller` base class and implement `addRoutes(server)`.
+- Keep `addRoutes` thin: map routes to private handler methods rather than embedding full control flow inline.
+- Construct/inject service dependencies in controller constructor, not in `addRoutes`.
+- Keep service logic in service classes and HTTP response mapping in controllers.
+
+## 10. Additional Patterns To Preserve
 
 - Keep barrel exports (`index.ts`) updated when adding new modules used cross-package.
 - Prefer typed schema key objects such as `postAmenitySchemaKeys` to avoid string literals spread across files.
@@ -196,7 +207,7 @@ Avoid redefining schema types locally if an equivalent exists in `common`.
 - Match local indentation/spacing style of the file you are editing.
 - In SQL and TS, follow neighboring casing conventions (`NOW()` vs `now()`) unless doing a deliberate normalization pass.
 
-## 10. Pre-Commit Self-Check
+## 11. Pre-Commit Self-Check
 
 Before finalizing edits, confirm:
 
