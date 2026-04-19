@@ -27,7 +27,7 @@ const RegisterPage = () => {
    await registerAuth(data);
    navigate({ to: frontendRoutes.authed.dashboard.index });
   } catch (error) {
-   const errorMessage = error instanceof Error ? error.message : t('common.registration_failed');
+   const errorMessage = error instanceof Error ? error.message : t('auth.registration_failed');
    setError('root', { message: errorMessage });
   }
  };
@@ -64,7 +64,7 @@ const RegisterPage = () => {
        error={!!errors.password}
        fullWidth
        helperText={errors.password?.message}
-       label={t('common.password')}
+       label={t('auth.password')}
        type='password'
       />
 
@@ -74,7 +74,7 @@ const RegisterPage = () => {
        error={!!errors.passwordConfirmation}
        fullWidth
        helperText={errors.passwordConfirmation?.message}
-       label={t('common.confirm_password')}
+       label={t('auth.confirm_password')}
        type='password'
       />
 
@@ -83,12 +83,12 @@ const RegisterPage = () => {
        disabled={disabled}
        type='submit'
       >
-       {disabled ? t('common.loading') : t('common.register')}
+       {disabled ? t('common.loading') : t('auth.register')}
       </Button>
 
       <Box className='flex flex-col gap-1 items-center mt-2'>
-       <Link to={frontendRoutes.nonAuthed.login.index}><Button>{t('common.already_got_account')}</Button></Link>
-       <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('common.forgot_password')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.login.index}><Button>{t('auth.already_got_account')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('auth.forgot_password')}</Button></Link>
       </Box>
      </Box>
     </form>

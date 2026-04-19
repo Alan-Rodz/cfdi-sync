@@ -1,18 +1,23 @@
 {
- "common": {
+ "auth": {
   "already_got_account": "Already have an account?",
   "confirm_password": "Confirm Password",
-  "email": "Email",
+  "failed_to_fetch_profile": "Failed to fetch user profile",
   "forgot_password": "Forgot Password?",
-  "loading": "Loading",
+  "invalid_credentials": "Invalid credentials",
   "login": "Login",
   "login_failed": "Login failed",
+  "login_successful": "Login successful",
   "no_account_yet": "Don't have an account yet?",
   "password": "Password",
   "recover_password": "Recover Password",
   "recover_password_description": "Enter your email address to receive a password recovery link",
   "register": "Register",
-  "registration_failed": "Registration failed",
+  "registration_failed": "Registration failed"
+ },
+ "common": {
+  "email": "Email",
+  "loading": "Loading",
   "send_email": "Send Email"
  },
  "schema": {

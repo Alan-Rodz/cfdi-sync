@@ -24,10 +24,10 @@ const LoginPage = () => {
  // -- Handler --------------------------------------------------------------------
  const onSubmit = async (data: LoginData) => {
   try {
-   await login(data.email, data.password);
+   await login(data);
    navigate({ to: frontendRoutes.authed.dashboard.index });
   } catch (err) {
-   const errorMessage = err instanceof Error ? err.message : t('common.login_failed');
+   const errorMessage = err instanceof Error ? err.message : t('auth.login_failed');
    setError('root', { message: errorMessage });
   }
  };
@@ -63,7 +63,7 @@ const LoginPage = () => {
        error={!!errors.password}
        fullWidth
        helperText={errors.password?.message}
-       label={t('common.password')}
+       label={t('auth.password')}
        type='password'
       />
 
@@ -72,12 +72,12 @@ const LoginPage = () => {
        disabled={disabled}
        type='submit'
       >
-       {disabled ? t('common.loading') : t('common.login')}
+       {disabled ? t('common.loading') : t('auth.login')}
       </Button>
 
       <Box className='flex flex-col gap-1 items-center mt-2'>
-       <Link to={frontendRoutes.nonAuthed.register}><Button>{t('common.no_account_yet')}</Button></Link>
-       <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('common.forgot_password')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.register}><Button>{t('auth.no_account_yet')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('auth.forgot_password')}</Button></Link>
       </Box>
      </Box>
     </form>
