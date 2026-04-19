@@ -1,5 +1,6 @@
 import { englishTranslationFunction, LocaledTranslationFn, LoginData, Profile, RegisterProfileData, ResponseStatus } from 'common';
 
+import { LoggerPort } from '../../logger/type';
 import { ServiceResult } from '../../type';
 import { ProfileAuthPort, ProfileRepositoryPort } from './type';
 
@@ -15,12 +16,14 @@ type CreateTokenFn = (payload: TokenPayload) => string;
 // == Service =====================================================================
 export class ProfileLifecycle {
  // -- Attribute ------------------------------------------------------------------
+ private readonly loggerPort: LoggerPort | null;
  private readonly profileAuthPort: ProfileAuthPort;
  private readonly profileRepositoryPort: ProfileRepositoryPort;
  private readonly t: LocaledTranslationFn;
 
  // -- Initialization -------------------------------------------------------------
- constructor(profileAuthPort: ProfileAuthPort, profileRepositoryPort: ProfileRepositoryPort, t: LocaledTranslationFn = englishTranslationFunction) {
+ constructor(profileAuthPort: ProfileAuthPort, profileRepositoryPort: ProfileRepositoryPort, t: LocaledTranslationFn = englishTranslationFunction, loggerPort: LoggerPort | null = null) {
+  this.loggerPort = loggerPort;
   this.profileAuthPort = profileAuthPort;
   this.profileRepositoryPort = profileRepositoryPort;
   this.t = t;
@@ -34,7 +37,8 @@ export class ProfileLifecycle {
 
   try {
    profile = await this.profileRepositoryPort.findProfileByEmail(email);
-  } catch {
+  } catch (error) {
+   await this.safeLogError('#cc8c4dc9 Failed to fetch profile during login', error);
    return { data: null, message: this.t('auth.failed_to_fetch_profile'), status: ResponseStatus.ERROR };
   }
 
@@ -58,7 +62,8 @@ export class ProfileLifecycle {
 
   try {
    existing = await this.profileRepositoryPort.isEmailRegistered(email);
-  } catch {
+  } catch (error) {
+   await this.safeLogError('#58a94e76 Failed to check email before registration', error);
    return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
   }
 
@@ -77,7 +82,8 @@ export class ProfileLifecycle {
     email,
     id: signUpResult.profileId,
    });
-  } catch {
+  } catch (error) {
+   await this.safeLogError('#715588ca Failed to create profile after registration', error);
    return { data: null, message: this.t('auth.failed_to_create_profile'), status: ResponseStatus.BAD_REQUEST };
   }
 
@@ -90,7 +96,8 @@ export class ProfileLifecycle {
 
   try {
    profile = await this.profileRepositoryPort.findProfileById(profileId);
-  } catch {
+  } catch (error) {
+   await this.safeLogError('#f96251d3 Failed to fetch current profile', error);
    return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
   }
 
@@ -99,5 +106,10 @@ export class ProfileLifecycle {
   } /* else -- profile found */
 
   return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
+ }
+
+ // -- Private --------------------------------------------------------------------
+ private async safeLogError(message: string, error: unknown) {
+  await this.loggerPort?.safeLogError(message, error);
  }
 }

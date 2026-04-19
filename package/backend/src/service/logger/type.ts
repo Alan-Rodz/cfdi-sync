@@ -12,3 +12,7 @@ export type LoggerLogOptions = {
  context?: LoggerContext;
  scope?: string;
 };
+
+export type LoggerPort = {
+ safeLogError(message: string, error: unknown): Promise<void>;
+};

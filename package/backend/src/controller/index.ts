@@ -14,6 +14,7 @@ export const getControllers = (dependencies: ControllerRegistryDependencies): Co
  return [
   new AuthController({
    ...dependencies.auth,
+   loggerPort: dependencies.loggerPort,
    t: dependencies.t,
   }),
  ];

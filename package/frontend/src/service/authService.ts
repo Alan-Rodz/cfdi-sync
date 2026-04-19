@@ -7,7 +7,7 @@ import { WEBSITE_NAME } from '@/constant/website';
 export type ProfileResponse = ApiResponse<Profile>;
 
 // == Constant ====================================================================
-const API_BASE = import.meta.env.VITE_API_URL!;
+const API_BASE = import.meta.env.VITE_BACKEND_URL!;
 const PROFILE_KEY = `${WEBSITE_NAME}-authProfile`;
 const TOKEN_KEY = `${WEBSITE_NAME}-authToken`;
 

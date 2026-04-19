@@ -2,11 +2,11 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 import { Database, rpcNames } from 'common';
 
-import { LoggerLevel, LoggerLogOptions, LoggerServiceConfig } from './type';
+import { LoggerLevel, LoggerLogOptions, LoggerPort, LoggerServiceConfig } from './type';
 
 // ********************************************************************************
 // == Service =====================================================================
-export class Logger {
+export class Logger implements LoggerPort {
 
  // -- Attribute ------------------------------------------------------------------
  private client: SupabaseClient<Database>;

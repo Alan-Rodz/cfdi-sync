@@ -11,10 +11,12 @@ import { ControllerDependencies, ControllerResponse } from './type';
 export abstract class Controller {
 
  // -- Attribute ------------------------------------------------------------------
+ protected readonly loggerPort: ControllerDependencies['loggerPort'];
  protected readonly t: ControllerDependencies['t'];
 
  // -- Lifecycle ------------------------------------------------------------------
- constructor({ t }: ControllerDependencies) {
+ constructor({ loggerPort, t }: ControllerDependencies) {
+  this.loggerPort = loggerPort;
   this.t = t;
  }
 

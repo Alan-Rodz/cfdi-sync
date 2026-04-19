@@ -1,5 +1,7 @@
 import { LocaledTranslationFn } from 'common';
 
+import { LoggerPort } from '../service/logger/type';
+
 // ********************************************************************************
 export type ControllerResponse<T = null> = {
  data: T | null;
@@ -8,5 +10,6 @@ export type ControllerResponse<T = null> = {
 };
 
 export type ControllerDependencies = {
+ loggerPort: LoggerPort;
  t: LocaledTranslationFn;
 };

@@ -210,7 +210,7 @@ For backend services in `package/backend/src/**`, follow these boundaries:
 
 For controller dependencies:
 
-- Keep `ControllerDependencies` generic and cross-controller only (currently translation function `t`).
+- Keep `ControllerDependencies` generic and cross-controller only (for example translation function `t` and shared `loggerPort`).
 - Define feature-specific controller dependency types (for example `AuthControllerDependencies`) that extend base dependencies.
 - In controller registry (`package/backend/src/controller/index.ts`), use a registry dependency shape with feature sections (for example `auth`) and map each section to its controller.
 

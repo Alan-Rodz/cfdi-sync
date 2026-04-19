@@ -35,7 +35,7 @@ Constructor conventions:
 - Call `super(dependencies)`.
 - Build or assign controller-owned service dependencies in constructor.
 - Prefer optional dependency injection for testability (for example `profileLifecycle?: ProfileLifecycle`).
-- Keep `ControllerDependencies` generic (cross-controller only) and place feature ports/services only in feature-specific dependency types.
+- Keep `ControllerDependencies` generic (cross-controller only, for example `t` and `loggerPort`) and place feature ports/services only in feature-specific dependency types.
 
 Route registration conventions:
 

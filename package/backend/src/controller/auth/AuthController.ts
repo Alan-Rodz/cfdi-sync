@@ -16,7 +16,7 @@ export class AuthController extends Controller {
  // -- Lifecycle ------------------------------------------------------------------
  constructor(dependencies: AuthControllerDependencies) {
   super(dependencies);
-  this.profileLifecycle = dependencies.profileLifecycle || new ProfileLifecycle(dependencies.profileAuthPort, dependencies.profileRepositoryPort, this.t);
+  this.profileLifecycle = dependencies.profileLifecycle || new ProfileLifecycle(dependencies.profileAuthPort, dependencies.profileRepositoryPort, this.t, this.loggerPort);
  }
 
  // -- Public ---------------------------------------------------------------------
