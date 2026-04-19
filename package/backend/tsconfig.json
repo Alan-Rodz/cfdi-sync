@@ -17,7 +17,9 @@
   "isolatedModules": true,
   "jsx": "preserve",
   "incremental": true,
-  "paths": {}
+  "paths": {
+   "common": ["../common/src/index.ts"]
+  }
  },
  "include": [
   "**/*.ts",
