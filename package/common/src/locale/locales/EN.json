@@ -11,6 +11,7 @@
   "recover_password": "Recover Password",
   "recover_password_description": "Enter your email address to receive a password recovery link",
   "register": "Register",
+  "registration_failed": "Registration failed",
   "send_email": "Send Email"
  },
  "schema": {

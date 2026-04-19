@@ -3,9 +3,9 @@ import { Box, Button, Container, TextField } from '@mui/material';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
-import { getRegisterUserSchema, registerUserSchemaKeys, type RegisterUserData } from 'common';
+import { getRegisterUserSchema, registerUserSchemaKeys, frontendRoutes, type RegisterUserData } from 'common';
 
-import { webRouter } from '@/constant/route';
+import { useAuth } from '@/ui/hook/useAuth';
 import { useLocale } from '@/ui/hook/useLocale';
 
 // ********************************************************************************
@@ -13,30 +13,44 @@ import { useLocale } from '@/ui/hook/useLocale';
 const RegisterPage = () => {
  const navigate = useNavigate();
  const { t } = useLocale();
+ const { register: registerAuth, isLoading, error: authError } = useAuth();
 
  // -- Form -----------------------------------------------------------------------
- const defaultValues: RegisterUserData = { email: '', password: '', passwordConfirmation: '' };
- const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterUserData>({ resolver: zodResolver(getRegisterUserSchema(t)), defaultValues });
+ const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<RegisterUserData>({
+  defaultValues: { email: '', password: '', passwordConfirmation: '' },
+  resolver: zodResolver(getRegisterUserSchema(t)),
+ });
 
  // -- Handler --------------------------------------------------------------------
  const onSubmit = async (data: RegisterUserData) => {
   try {
-   // const result = await authService.signup(data);
-   // authService.setToken(result.token!);
-   navigate({ to: webRouter.authed.dashboard.index });
+   await registerAuth(data.email, data.password, data.passwordConfirmation);
+   navigate({ to: frontendRoutes.authed.dashboard.index });
   } catch (error) {
-   console.error('Registration error:', error);
+   const errorMessage = error instanceof Error ? error.message : t('common.registration_failed');
+   setError('root', { message: errorMessage });
   }
  };
 
  // -- UI -------------------------------------------------------------------------
+ const disabled = isLoading || isSubmitting;
  return (
   <Container className='flex h-[70vh] items-center' component='main' maxWidth='xs'>
    <Box className='w-full'>
     <form onSubmit={handleSubmit(onSubmit)}>
      <Box className='flex flex-col gap-2'>
+
+      {
+       (errors.root || authError) && (
+        <Box className='bg-red-500 p-2 rounded text-white text-sm'>
+         {errors.root?.message || authError}
+        </Box>
+       )
+      }
+
       <TextField
        {...register(registerUserSchemaKeys.email)}
+       disabled={disabled}
        error={!!errors.email}
        fullWidth
        helperText={errors.email?.message}
@@ -46,6 +60,7 @@ const RegisterPage = () => {
 
       <TextField
        {...register(registerUserSchemaKeys.password)}
+       disabled={disabled}
        error={!!errors.password}
        fullWidth
        helperText={errors.password?.message}
@@ -55,6 +70,7 @@ const RegisterPage = () => {
 
       <TextField
        {...register(registerUserSchemaKeys.passwordConfirmation)}
+       disabled={disabled}
        error={!!errors.passwordConfirmation}
        fullWidth
        helperText={errors.passwordConfirmation?.message}
@@ -64,15 +80,15 @@ const RegisterPage = () => {
 
       <Button
        className='p-3'
-       disabled={isSubmitting}
+       disabled={disabled}
        type='submit'
       >
-       {t('common.register')}
+       {disabled ? t('common.loading') : t('common.register')}
       </Button>
 
       <Box className='flex flex-col gap-1 items-center mt-2'>
-       <Link to={webRouter.nonAuthed.login.index}><Button>{t('common.already_got_account')}</Button></Link>
-       <Link to={webRouter.nonAuthed.recover_password}><Button>{t('common.forgot_password')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.login.index}><Button>{t('common.already_got_account')}</Button></Link>
+       <Link to={frontendRoutes.nonAuthed.recover_password}><Button>{t('common.forgot_password')}</Button></Link>
       </Box>
      </Box>
     </form>
@@ -82,4 +98,4 @@ const RegisterPage = () => {
 };
 
 // == Export ======================================================================
-export const Route = createFileRoute('/register')({ component: RegisterPage });
+export const Route = createFileRoute(frontendRoutes.nonAuthed.register)({ component: RegisterPage });

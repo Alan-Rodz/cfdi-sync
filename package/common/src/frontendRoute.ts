@@ -3,7 +3,7 @@
 export const REDIRECT_KEYWORD = 'redirect';
 
 // == Web =========================================================================
-export const webRouter = {
+export const frontendRoutes = {
  authed: {
   dashboard: {
    index: `/dashboard`,
