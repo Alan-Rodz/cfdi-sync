@@ -1,5 +1,5 @@
-import { Database } from '../../db/type';
-import { Profile } from './type';
+import type { Database } from '../../db/type';
+import type { Profile } from './type';
 
 // ********************************************************************************
 // == Table =======================================================================

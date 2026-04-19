@@ -1,4 +1,4 @@
-import { Profile } from '../type';
+import type { Profile } from '../type';
 
 // ********************************************************************************
 export type PatchProfileNameData = {

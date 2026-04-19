@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { englishTranslationFunction, LocaledTranslationFn } from '../locale/functionality';
+import { englishTranslationFunction, type LocaledTranslationFn } from '../locale/functionality';
 
 // ********************************************************************************
 // == Constant ====================================================================

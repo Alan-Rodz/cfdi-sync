@@ -1,5 +1,5 @@
-import { Database } from '../../db/type';
-import { AdminProfileRelation } from './type';
+import type { Database } from '../../db/type';
+import type { AdminProfileRelation } from './type';
 
 // ********************************************************************************
 // == Table =======================================================================
