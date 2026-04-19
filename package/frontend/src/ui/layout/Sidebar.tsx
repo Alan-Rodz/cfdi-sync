@@ -1,14 +1,14 @@
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material';
 import { Link } from '@tanstack/react-router';
 import type { FC } from 'react';
 
 import { frontendRoutes } from 'common';
 
-import { WEBSITE_NAME } from '@/constant/website';
+import { appColors } from '@/ui/constant/color';
 import { appIcons } from '@/ui/constant/icon';
 import { useAuth } from '@/ui/hook/useAuth';
 import type { DrawerDisclosure } from '@/ui/hook/useDrawerDisclosure';
-import { appColors } from '../constant/color';
+import { useResponsive } from '@/ui/hook/useResponsive';
 
 // ********************************************************************************
 // == Type ========================================================================
@@ -17,7 +17,8 @@ type Props = {
 };
 
 // == Constant ====================================================================
-const DRAWER_WIDTH = 250;
+const OPEN_DRAWER_WIDTH = 240;
+const CLOSED_DRAWER_WIDTH = 65;
 
 const menuItems = [
  { icon: appIcons.home, label: 'Home', href: frontendRoutes.nonAuthed.landing_page },
@@ -26,62 +27,84 @@ const menuItems = [
 
 // == Component ===================================================================
 export const Sidebar: FC<Props> = ({ drawerDisclosure }) => {
- const { isAuthenticated } = useAuth();
+ const { isDrawerOpen, onDrawerOpen, onDrawerClose } = drawerDisclosure;
+ const isDesktop = useResponsive('up', 'lg');
 
  // -- UI -------------------------------------------------------------------------
+ if (isDesktop) {
+  return (
+   <Box
+    sx={{
+     backgroundColor: appColors.darPaperBackground,
+     display: 'flex',
+     flexDirection: 'column',
+     flexShrink: 0,
+     overflow: 'hidden',
+     transition: 'width 0.2s',
+     width: isDrawerOpen ? OPEN_DRAWER_WIDTH : CLOSED_DRAWER_WIDTH,
+    }}
+   >
+    <Box sx={{ display: 'flex', justifyContent: isDrawerOpen ? 'flex-end' : 'center', p: 1 }}>
+     <IconButton onClick={isDrawerOpen ? onDrawerClose : onDrawerOpen} sx={{ color: appColors.white }}>
+      {isDrawerOpen ? appIcons.arrowLeft() : appIcons.menu()}
+     </IconButton>
+    </Box>
+    <DrawerItems isOpen={isDrawerOpen} onClose={() => { /* desktop: keep open */ }} />
+   </Box>
+  );
+ }
+
  return (
   <Drawer
    anchor='left'
-   open={drawerDisclosure.isDrawerOpen}
-   onClose={drawerDisclosure.onDrawerClose}
-   sx={{
-    '& .MuiDrawer-paper': {
-     backgroundColor: 'background.paper',
-     width: DRAWER_WIDTH,
-    },
-   }}
+   open={isDrawerOpen}
+   onClose={onDrawerClose}
+   sx={{ '& .MuiDrawer-paper': { backgroundColor: appColors.darPaperBackground, width: OPEN_DRAWER_WIDTH } }}
   >
-   <Box
-    role='presentation'
-    onClick={drawerDisclosure.onDrawerClose}
-    sx={{ padding: '1em' }}
-   >
-    <Box sx={{ marginBottom: '1em', fontSize: '1.2em', fontWeight: 'bold' }}>
-     {WEBSITE_NAME}
-    </Box>
-
-    <List>
-     {menuItems.map((item) => (
-      <Link key={item.label} to={item.href}>
-       <ListItem disablePadding>
-        <ListItemButton>
-         <ListItemIcon>
-          {item.icon()}
-         </ListItemIcon>
-         <ListItemText sx={{ color: appColors.white }} primary={item.label} />
-        </ListItemButton>
-       </ListItem>
-      </Link>
-     ))}
-    </List>
-
-    {
-     isAuthenticated && (
-      <List sx={{ marginTop: 'auto', paddingTop: '1em', borderTop: '1px solid', borderColor: 'divider' }}>
-       <Link to={frontendRoutes.nonAuthed.logout}>
-        <ListItem disablePadding>
-         <ListItemButton>
-          <ListItemIcon>
-           {appIcons.logout()}
-          </ListItemIcon>
-          <ListItemText sx={{ color: appColors.white }} primary='Log out' />
-         </ListItemButton>
-        </ListItem>
-       </Link>
-      </List>
-     )
-    }
+   <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+    <IconButton onClick={onDrawerClose} sx={{ color: appColors.white }}>
+     {appIcons.arrowLeft()}
+    </IconButton>
    </Box>
+   <DrawerItems isOpen={true} onClose={onDrawerClose} />
   </Drawer>
+ );
+};
+
+const DrawerItems: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+ const { isAuthenticated } = useAuth();
+
+ return (
+  <List sx={{ padding: 0 }}>
+   {menuItems.map((item) => (
+    <Link key={item.label} to={item.href} onClick={onClose}>
+     <Tooltip disableHoverListener={isOpen} placement='right' title={item.label}>
+      <ListItem disablePadding>
+       <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
+        <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
+         {item.icon()}
+        </ListItemIcon>
+        {isOpen && <ListItemText primary={item.label} sx={{ color: appColors.white }} />}
+       </ListItemButton>
+      </ListItem>
+     </Tooltip>
+    </Link>
+   ))}
+
+   {isAuthenticated && (
+    <Link to={frontendRoutes.nonAuthed.logout} onClick={onClose}>
+     <Tooltip disableHoverListener={isOpen} placement='right' title='Log out'>
+      <ListItem disablePadding>
+       <ListItemButton sx={{ minHeight: 48, color: appColors.white, '&:hover': { backgroundColor: appColors.darkHover } }}>
+        <ListItemIcon sx={{ color: appColors.white, minWidth: isOpen ? 40 : 'unset' }}>
+         {appIcons.logout()}
+        </ListItemIcon>
+        {isOpen && <ListItemText primary='Log out' sx={{ color: appColors.white }} />}
+       </ListItemButton>
+      </ListItem>
+     </Tooltip>
+    </Link>
+   )}
+  </List>
  );
 };
