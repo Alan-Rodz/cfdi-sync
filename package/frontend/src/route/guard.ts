@@ -1,9 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { redirect } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/guard')({
-  component: RouteComponent,
-})
+import type { RouterContext } from './__root';
 
-function RouteComponent() {
-  return <div>Hello "/guard"!</div>
-}
+// ********************************************************************************
+// == Type ========================================================================
+type AuthState = 'loggedIn' | 'loggedOut';
+
+// == Guard =======================================================================
+export const ensureProfileIs = (state: AuthState, redirectPath: string) =>
+ ({ context }: { context: RouterContext }) => {
+  if (context.isLoading) return;
+
+  if (state === 'loggedIn' && !context.isAuthenticated) throw redirect({ to: redirectPath });
+  if (state === 'loggedOut' && context.isAuthenticated) throw redirect({ to: redirectPath });
+ };
