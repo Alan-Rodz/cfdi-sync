@@ -14,6 +14,24 @@ export type Database = {
  }
  public: {
   Tables: {
+   log: {
+    Row: {
+     created_at: string
+     id: string
+     text: string
+    }
+    Insert: {
+     created_at?: string
+     id?: string
+     text?: string
+    }
+    Update: {
+     created_at?: string
+     id?: string
+     text?: string
+    }
+    Relationships: []
+   }
    profile: {
     Row: {
      created_at: string
@@ -46,7 +64,12 @@ export type Database = {
    [_ in never]: never
   }
   Functions: {
-   [_ in never]: never
+   insert_log: {
+    Args: { input_text?: string }
+    Returns: {
+     inserted_log_id: string
+    }[]
+   }
   }
   Enums: {
    [_ in never]: never
