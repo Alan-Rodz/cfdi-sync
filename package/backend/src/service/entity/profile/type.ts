@@ -1,12 +1,7 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import type { Database } from 'common';
 import { LoginData, Profile, RegisterProfileData } from 'common';
 
 // ********************************************************************************
 // == Type ========================================================================
-export type ProfileRepositoryClient = string /*token*/ | SupabaseClient<Database>;
-
 export type ProfileAuthSignInResult = {
  authenticated: boolean;
  profileId: Profile['id'] | null;
@@ -27,8 +22,12 @@ export type ProfileAuthPort = {
 export type ProfileRepositoryCreateInput = Pick<Profile, 'email' | 'id'>;
 
 export type ProfileRepositoryPort = {
- findProfileByEmail(email: Profile['email'], profileRepositoryClient: ProfileRepositoryClient): Promise<Profile | null>;
- findProfileById(profileId: Profile['id'], profileRepositoryClient: ProfileRepositoryClient): Promise<Profile | null>;
+ findProfileByEmail(email: Profile['email']): Promise<Profile | null>;
+ findProfileById(profileId: Profile['id']): Promise<Profile | null>;
  isEmailRegistered(email: Profile['email']): Promise<boolean>;
- updateProfileName(profileId: Profile['id'], name: Profile['name'], profileRepositoryClient: ProfileRepositoryClient): Promise<Profile | null>;
+ updateProfileName(profileId: Profile['id'], name: Profile['name']): Promise<Profile | null>;
+};
+
+export type ProfileRepositoryFactoryPort = {
+ forAuthenticatedRequest(supabaseAccessToken: string): ProfileRepositoryPort;
 };

@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, ResponseStatus } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
+import { ProfileRepositoryFactoryPort } from '../../service/entity/profile/type';
 
 import { Controller } from '../Controller';
 import { AuthControllerDependencies } from './type';
@@ -12,11 +13,13 @@ import { AuthControllerDependencies } from './type';
 export class AuthController extends Controller {
  // -- Attribute ------------------------------------------------------------------
  private readonly profileLifecycle: ProfileLifecycle;
+ private readonly profileRepositoryFactoryPort: ProfileRepositoryFactoryPort;
 
  // -- Lifecycle ------------------------------------------------------------------
  constructor(dependencies: AuthControllerDependencies) {
   super(dependencies);
-  this.profileLifecycle = dependencies.profileLifecycle || new ProfileLifecycle(dependencies.profileAuthPort, dependencies.profileRepositoryPort, this.t, this.loggerPort);
+  this.profileRepositoryFactoryPort = dependencies.profileRepositoryFactoryPort;
+  this.profileLifecycle = dependencies.profileLifecycle || new ProfileLifecycle(dependencies.profileAuthPort, dependencies.profileRepositoryFactoryPort, this.t, this.loggerPort);
  }
 
  // -- Public ---------------------------------------------------------------------
@@ -45,7 +48,8 @@ export class AuthController extends Controller {
     return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
    } /* else -- authenticated request context available */
 
-   const result = await this.profileLifecycle.getCurrentProfile(authContext.payload.profileId, authContext.supabaseClient);
+   const repository = this.profileRepositoryFactoryPort.forAuthenticatedRequest(authContext.supabaseAccessToken);
+   const result = await this.profileLifecycle.getCurrentProfile(authContext.payload.profileId, repository);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#6bdb681d', 'auth.profile_not_found', ResponseStatus.UNAUTHORIZED);
@@ -59,7 +63,8 @@ export class AuthController extends Controller {
     return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
    } /* else -- authenticated request context available */
 
-   const result = await this.profileLifecycle.patchProfileName(authContext.payload.profileId, request.body.name, authContext.supabaseClient);
+   const repository = this.profileRepositoryFactoryPort.forAuthenticatedRequest(authContext.supabaseAccessToken);
+   const result = await this.profileLifecycle.patchProfileName(authContext.payload.profileId, request.body.name, repository);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#a8cf9328', 'entity.profile.update_profile_failed', ResponseStatus.UNAUTHORIZED);

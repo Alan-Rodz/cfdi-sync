@@ -1,7 +1,6 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import 'fastify';
 
-import type { Database, Profile } from 'common';
+import type { Profile } from 'common';
 
 // ********************************************************************************
 // == Type ========================================================================
@@ -11,7 +10,6 @@ export type AuthenticatedRequestContext = {
   profileId: Profile['id'];
  };
  supabaseAccessToken: string;
- supabaseClient: SupabaseClient<Database>;
 };
 
 declare module 'fastify' {

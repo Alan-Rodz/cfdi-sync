@@ -9,7 +9,7 @@ import type { AuthenticatedRequestContext } from './fastify';
 
 import { getControllers } from './controller';
 import { SupabaseProfileAuth } from './service/entity/profile/SupabaseProfileAuth';
-import { SupabaseProfileRepository } from './service/entity/profile/SupabaseProfileRepository';
+import { SupabaseProfileRepositoryFactory } from './service/entity/profile/SupabaseProfileRepositoryFactory';
 import { Logger } from './service/logger/Logger';
 
 // ********************************************************************************
@@ -37,23 +37,22 @@ server.decorate('authenticateWithSupabase', async (request, reply) => {
  request.authContext = {
   payload: request.user as AuthenticatedRequestContext['payload'],
   supabaseAccessToken,
-  supabaseClient: createClient<Database>(
-   process.env.SUPABASE_URL!,
-   process.env.SUPABASE_KEY!,
-   { global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } } }
-  ),
  };
 });
 
 const loggerPort = new Logger(supaBaseClient, { scope: 'General' });
 const profileAuth = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));
-const profileRepository = new SupabaseProfileRepository(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' }));
+const profileRepositoryFactory = new SupabaseProfileRepositoryFactory(
+ process.env.SUPABASE_URL!,
+ process.env.SUPABASE_KEY!,
+ new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' })
+);
 
 // == Setup =======================================================================
 const controllers = getControllers({
  auth: {
   profileAuthPort: profileAuth,
-  profileRepositoryPort: profileRepository,
+  profileRepositoryFactoryPort: profileRepositoryFactory,
  },
  loggerPort,
  t: englishTranslationFunction,
