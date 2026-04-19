@@ -33,24 +33,16 @@ export class ProfileLifecycle {
  public async login(data: LoginData, createToken: CreateTokenFn): Promise<ServiceResult<Profile>> {
   const { email, password } = data;
   const credentials = { email, password };
-  let profile: Profile | null = null;
-
-  try {
-   profile = await this.profileRepositoryPort.findProfileByEmail(email);
-  } catch (error) {
-   await this.safeLogError('#cc8c4dc9 Failed to fetch profile during login', error);
-   return { data: null, message: this.t('auth.failed_to_fetch_profile'), status: ResponseStatus.ERROR };
-  }
-
-  if (!profile) {
-   return { data: null, message: this.t('auth.invalid_credentials'), status: ResponseStatus.UNAUTHORIZED };
-  } /* else -- profile found */
 
   const signInResult = await this.profileAuthPort.signInWithPassword(credentials);
-
   if (!signInResult.authenticated) {
    return { data: null, message: this.t('auth.invalid_credentials'), status: ResponseStatus.UNAUTHORIZED };
   } /* else -- authentication successful */
+
+  const profile = await this.profileRepositoryPort.findProfileByEmail(email);
+  if (!profile) {
+   return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
+  } /* else -- profile found */
 
   const token = createToken({ email: profile.email, profileId: profile.id });
   await this.safeLogInfo('#4649f23e Login successful', { profileId: profile.id });

@@ -7,6 +7,7 @@ export const frontendRoutes = {
  authed: {
   dashboard: {
    index: `/dashboard`,
+   profile: `/dashboard/profile`,
   },
  },
 
