@@ -112,7 +112,7 @@ export class ProfileLifecycle {
   try {
    await this.loggerPort?.info(message, { context });
   } catch (error) {
-   await this.safeLogError('#16f119c5 Failed to log login success', error);
+   await this.safeLogError('#48e48047 Failed to log', error);
   }
  }
 }

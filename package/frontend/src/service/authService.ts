@@ -25,7 +25,7 @@ export const authService = {
    const json = await response.json() as ProfileResponse;
    return json.data || null;
   } catch (error) {
-   logConsoleError(error, '#cee06566 - Failed to fetch current user');
+   logConsoleError(error, '#a7d6f3fd - Failed to fetch current user');
    return null;
   }
  },
