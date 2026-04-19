@@ -73,6 +73,26 @@ export class SupabaseProfileRepository implements ProfileRepositoryPort {
   return !!existing && existing.length > 0;
  }
 
+ public async updateProfileName(profileId: Profile['id'], name: Profile['name']): Promise<Profile | null> {
+  const { data: updatedProfile, error: updatedProfileError } = await this.client
+   .from(profileTableName)
+   .update({ [profileTableColumns.name]: name })
+   .eq(profileTableColumns.id, profileId)
+   .select('*')
+   .single();
+
+  if (updatedProfileError) {
+   await this.safeLogError('#7053b783 Supabase update profile name failed', updatedProfileError);
+   throw new Error('#86392052 Failed to update profile name');
+  } /* else -- update query completed */
+
+  if (!updatedProfile) {
+   return null;
+  } /* else -- profile updated */
+
+  return updatedProfile as Profile;
+ }
+
  // -- Private --------------------------------------------------------------------
  private async safeLogError(message: string, error: unknown) {
   await this.loggerPort?.safeLogError(message, error);

@@ -95,6 +95,26 @@ export class ProfileLifecycle {
   return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
  }
 
+ public async patchProfileName(profileId: Profile['id'], name: Profile['name']): Promise<ServiceResult<Profile>> {
+  if (!name.trim()) {
+   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+  } /* else -- valid name */
+
+  let profile: Profile | null = null;
+  try {
+   profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim());
+  } catch (error) {
+   await this.safeLogError('#594086af Failed to patch profile name', error);
+   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
+  }
+
+  if (!profile) {
+   return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
+  } /* else -- profile updated */
+
+  return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.SUCCESS };
+ }
+
  // -- Private --------------------------------------------------------------------
  private async safeLogError(message: string, error: unknown) {
   await this.loggerPort?.safeLogError(message, error);

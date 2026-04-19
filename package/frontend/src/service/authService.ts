@@ -1,4 +1,4 @@
-import { backendApiRoutes, logConsoleError, RequestContentType, RequestHeader, RequestMethod, type ApiResponse, type LoginData, type Profile, type RegisterProfileData } from 'common';
+import { backendApiRoutes, logConsoleError, RequestContentType, RequestHeader, RequestMethod, type ApiResponse, type LoginData, type PatchProfileNameData, type Profile, type RegisterProfileData } from 'common';
 
 import { WEBSITE_NAME } from '@/constant/website';
 
@@ -75,6 +75,27 @@ export const authService = {
    authService.saveToken(json.token);
    authService.saveProfile(json.data);
   } /* else -- no data or no token */
+
+  return json;
+ },
+
+ updateProfileName: async (data: PatchProfileNameData): Promise<ProfileResponse> => {
+  const response = await authService.fetchWithAuth(backendApiRoutes.auth.profile, {
+   body: JSON.stringify(data),
+   headers: { [RequestHeader.ContentType]: RequestContentType.Json },
+   method: RequestMethod.PATCH,
+  });
+
+  if (!response.ok) {
+   const error = await response.json();
+   logConsoleError(error, '#188d8fe6 - Update profile failed');
+   throw error;
+  } /* else -- successful request */
+
+  const json = await response.json() as ProfileResponse;
+  if (json.data) {
+   authService.saveProfile(json.data);
+  } /* else -- no profile data */
 
   return json;
  },

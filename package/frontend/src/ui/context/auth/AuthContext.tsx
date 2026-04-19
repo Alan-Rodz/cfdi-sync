@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import type { LoginData, Profile, RegisterProfileData } from 'common';
+import type { LoginData, PatchProfileNameData, Profile, RegisterProfileData } from 'common';
 
 // ********************************************************************************
 // == Type ========================================================================
@@ -13,6 +13,7 @@ type State = {
  profile: Profile | null;
  register: (data: RegisterProfileData) => Promise<void>;
  token: string | null;
+ updateProfileName: (data: PatchProfileNameData) => Promise<void>;
 };
 
 // == Context =====================================================================

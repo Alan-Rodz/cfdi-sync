@@ -63,7 +63,7 @@ export const AppBarProfileMenu: FC<Props> = ({ disclosure }) => {
         <ListItemText sx={{ color: appColors.white }}>Dashboard</ListItemText>
        </MenuItem>
       </Link>
-      <Link to={frontendRoutes.authed.dashboard.index} style={{ textDecoration: 'none' }}>
+      <Link to={frontendRoutes.authed.dashboard.profile} style={{ textDecoration: 'none' }}>
        <MenuItem onClick={disclosure.handleCloseMenu}>
         <ListItemIcon>{appIcons.profile()}</ListItemIcon>
         <ListItemText sx={{ color: appColors.white }}>{t('common.my_profile')}</ListItemText>

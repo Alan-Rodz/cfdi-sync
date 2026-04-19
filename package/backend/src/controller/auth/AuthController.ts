@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { backendApiRoutes, LoginData, RegisterProfileData, ResponseStatus } from 'common';
+import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, ResponseStatus } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
 
@@ -21,6 +21,7 @@ export class AuthController extends Controller {
 
  // -- Public ---------------------------------------------------------------------
  public async addRoutes(server: FastifyInstance) {
+  server.patch<{ Body: PatchProfileNameData }>(backendApiRoutes.auth.profile, async (request, reply) => this.handlePatchProfileName(request, reply));
   server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => this.handleLogin(server, request, reply));
   server.post<{ Body: RegisterProfileData }>(backendApiRoutes.auth.register, async (request, reply) => this.handleRegister(server, request, reply));
   server.get(backendApiRoutes.auth.me, async (request, reply) => this.handleGetCurrentProfile(request, reply));
@@ -36,15 +37,6 @@ export class AuthController extends Controller {
   }
  }
 
- private async handleRegister(server: FastifyInstance, request: FastifyRequest<{ Body: RegisterProfileData }>, reply: FastifyReply) {
-  try {
-   const result = await this.profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
-   return this.sendServiceResult(reply, result, [ResponseStatus.CREATED]);
-  } catch (error) {
-   return this.sendUnexpectedError(reply, error, '#cd7ebd08', 'auth.registration_failed');
-  }
- }
-
  private async handleGetCurrentProfile(request: FastifyRequest, reply: FastifyReply) {
   try {
    await request.jwtVerify();
@@ -53,6 +45,26 @@ export class AuthController extends Controller {
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#6bdb681d', 'auth.profile_not_found', ResponseStatus.UNAUTHORIZED);
+  }
+ }
+
+ private async handlePatchProfileName(request: FastifyRequest<{ Body: PatchProfileNameData }>, reply: FastifyReply) {
+  try {
+   await request.jwtVerify();
+   const payload = request.user as TokenPayload;
+   const result = await this.profileLifecycle.patchProfileName(payload.profileId, request.body.name);
+   return this.sendServiceResult(reply, result);
+  } catch (error) {
+   return this.sendUnexpectedError(reply, error, '#a8cf9328', 'auth.registration_failed', ResponseStatus.UNAUTHORIZED);
+  }
+ }
+
+ private async handleRegister(server: FastifyInstance, request: FastifyRequest<{ Body: RegisterProfileData }>, reply: FastifyReply) {
+  try {
+   const result = await this.profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
+   return this.sendServiceResult(reply, result, [ResponseStatus.CREATED]);
+  } catch (error) {
+   return this.sendUnexpectedError(reply, error, '#cd7ebd08', 'auth.registration_failed');
   }
  }
 }

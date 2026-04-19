@@ -22,4 +22,5 @@ export type ProfileRepositoryPort = {
  findProfileByEmail(email: Profile['email']): Promise<Profile | null>;
  findProfileById(profileId: Profile['id']): Promise<Profile | null>;
  isEmailRegistered(email: Profile['email']): Promise<boolean>;
+ updateProfileName(profileId: Profile['id'], name: Profile['name']): Promise<Profile | null>;
 };

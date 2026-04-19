@@ -1,7 +1,7 @@
 
 import { type PropsWithChildren, useCallback, useEffect, useState } from 'react';
 
-import type { LoginData, Profile, RegisterProfileData } from 'common';
+import type { LoginData, PatchProfileNameData, Profile, RegisterProfileData } from 'common';
 
 import { authService } from '@/service/authService';
 import { useLocale } from '@/ui/hook/useLocale';
@@ -109,6 +109,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   setError(null);
  }, []);
 
+ const handleUpdateProfileName = useCallback(
+  async (data: PatchProfileNameData) => {
+   setIsLoading(true);
+   setError(null);
+
+   try {
+    const response = await authService.updateProfileName(data);
+    if (response.data) {
+     setProfile(response.data);
+    } /* else -- nothing to update */
+   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : t('auth.registration_failed');
+    setError(errorMessage);
+    throw err;
+   } finally {
+    setIsLoading(false);
+   }
+  },
+  [t]
+ );
+
  // -- UI -------------------------------------------------------------------------
  return (
   <AuthContext.Provider value={{
@@ -119,7 +140,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
    logout: handleLogout,
    profile,
    register: handleRegister,
-   token
+   token,
+   updateProfileName: handleUpdateProfileName,
   }}>
    {children}
   </AuthContext.Provider>
