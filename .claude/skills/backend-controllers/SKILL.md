@@ -184,3 +184,71 @@ Before finalizing backend controller edits, confirm:
 14. Protected handlers read from shared `request.authContext` (which contains `supabaseAccessToken` but not a full Supabase client).
 15. Controllers inject and use `*RepositoryFactoryPort` to create request-scoped repository instances for protected operations.
 16. Services receive `*RepositoryPort` instances (created by the factory), not Supabase clients or tokens.
+
+## 11. Adding New CRUD Entities
+
+To add a new CRUD entity (for example `Invoice`), follow this 10-step checklist in order:
+
+**Step 1: SQL Table (Source of Truth)**
+- Create `package/common/src/db/table/{entity}.sql` with table definition.
+- Include timestamps and `PRIMARY KEY`.
+- Follow trigger pattern for `updated_at` if applicable.
+
+**Step 2: Types in `common`**
+- Create `package/common/src/entity/{entity}/type.ts` with `type {Entity} = Database['public']['Tables']['{entity}']['Row']`.
+- Create `package/common/src/entity/{entity}/constant.ts` with `{entity}TableName` and `{entity}TableColumns`.
+- Create `package/common/src/entity/{entity}/index.ts` barrel and export from `common/src/index.ts`.
+
+**Step 3: Define Ports**
+- Create `package/backend/src/service/entity/{entity}/type.ts`.
+- Define `{Entity}RepositoryPort` with business-shaped methods (for example `findById`, `create`, `update`).
+- Define `{Entity}RepositoryFactoryPort` with `forAuthenticatedRequest(token): {Entity}RepositoryPort`.
+
+**Step 4: Repository Adapter**
+- Create `package/backend/src/service/entity/{entity}/Supabase{Entity}Repository.ts`.
+- Implement `{Entity}RepositoryPort`.
+- Constructor takes `SupabaseClient<Database>` and optional `LoggerPort`.
+- Methods use `this.client` directly (already scoped); no token handling.
+
+**Step 5: Repository Factory**
+- Create `package/backend/src/service/entity/{entity}/Supabase{Entity}RepositoryFactory.ts`.
+- Implement `{Entity}RepositoryFactoryPort`.
+- `forAuthenticatedRequest(token)` creates a scoped Supabase client and returns a repository instance.
+
+**Step 6: Service Lifecycle**
+- Create `package/backend/src/service/entity/{entity}/{Entity}Lifecycle.ts`.
+- Constructor takes `t: LocaledTranslationFn` and optional `LoggerPort`.
+- Public methods accept `repository: {Entity}RepositoryPort` as last parameter (never Supabase clients or tokens).
+- Return `ServiceResult<T>` with consistent status codes.
+
+**Step 7: Controller**
+- Create `package/backend/src/controller/{entity}/{Entity}Controller.ts`.
+- Extend `Controller` base class.
+- Constructor takes `{Entity}ControllerDependencies`.
+- `addRoutes` registers protected routes with `preHandler: server.authenticateWithSupabase`.
+- Protected handlers resolve repository via `factory.forAuthenticatedRequest(authContext.supabaseAccessToken)`.
+
+**Step 8: Controller Types**
+- Create `package/backend/src/controller/{entity}/type.ts`.
+- Define `{Entity}ControllerDependencies` extending `ControllerDependencies`.
+- Include `{entity}RepositoryFactoryPort` and optional `{entity}Lifecycle`.
+
+**Step 9: Controller Registry**
+- Add feature section to `ControllerRegistryDependencies` (for example `invoice: { invoiceRepositoryFactoryPort }`)
+- Map feature section to new controller constructor.
+
+**Step 10: Bootstrap Wiring**
+- In `package/backend/src/index.ts`, instantiate `Supabase{Entity}RepositoryFactory`.
+- Pass factory into controller registry dependencies under feature section.
+
+**Reuse from ProfileLifecycle**
+- Copy the pattern from `package/backend/src/service/entity/profile/ProfileLifecycle.ts` for login/register if applicable.
+- For authenticated-only operations, always pass repository port as parameter.
+- Always use `ResponseStatus` constants and translation function `t`.
+- Always catch errors and log via `safeLogError`.
+
+**Consistency checks**
+- Ensure all public repository methods are port methods (no `internal` helper methods in the repository).
+- Ensure service never accepts Supabase clients or tokens as parameters.
+- Ensure controller always resolves repository from factory per request.
+- Ensure message keys follow convention (for example `entity.invoice.created`, `entity.invoice.fetch_failed`).

@@ -298,3 +298,18 @@ CREATE TABLE entity (
  PRIMARY KEY(id)
 );
 ```
+
+## 14. Adding New Backend CRUD Features
+
+When adding a new backend feature with a database table:
+
+1. **SQL is the source of truth**: Create the table first in `package/common/src/db/table/`.
+2. **Export from `common`**: TS types derive from the DB schema and are exported to enable all packages to use them.
+3. **Backend layer order**: SQL → types → ports → adapters → factories → services → controllers → bootstrap wiring.
+4. **Follow the 10-step pattern**: Refer to `../backend-controllers/SKILL.md` section 11 for the complete checklist.
+5. **Consistent naming**: Use `{Entity}RepositoryPort`, `Supabase{Entity}Repository`, `{Entity}RepositoryFactory`, `{Entity}Lifecycle`, `{Entity}Controller`.
+6. **Port-first design**: Define what the application needs (ports) before implementing how (adapters).
+7. **No infrastructure in services**: Services depend on ports only; repositories and client scoping are invisible to business logic.
+8. **Factory per request**: Each authenticated request gets its own scoped repository instance via the factory pattern—RLS is automatic.
+
+See `../backend-controllers/SKILL.md` section 11 for step-by-step walkthroughs with file structure examples.
