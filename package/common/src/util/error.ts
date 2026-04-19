@@ -4,5 +4,6 @@ export const logConsoleError = (error: unknown, metadata: string) => {
   console.error(`${metadata}: ${error.message}`);
  } /* else -- not an error */
 
- console.error(`${metadata}: ${String(error)}`);
+ console.error(metadata);
+ console.error(error);
 }
