@@ -6,20 +6,27 @@ import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle'
 
 import { Controller } from '../Controller';
 import { ControllerResponse } from '../type';
-import { TokenPayload } from './type';
+import { AuthControllerDependencies, TokenPayload } from './type';
 
 // ********************************************************************************
 // == Controller ==================================================================
 export class AuthController extends Controller {
+ // -- Attribute ------------------------------------------------------------------
+ private readonly profileLifecycle: ProfileLifecycle;
+
+ // -- Lifecycle ------------------------------------------------------------------
+ constructor(dependencies: AuthControllerDependencies) {
+  super(dependencies);
+  this.profileLifecycle = dependencies.profileLifecycle || new ProfileLifecycle(this.client, this.t);
+ }
+
  // -- Public ---------------------------------------------------------------------
  public async addRoutes(server: FastifyInstance) {
-
-  const profileLifecycle = new ProfileLifecycle(this.client, this.t);
 
   // -- Login ---------------------------------------------------------------------
   server.post<{ Body: LoginData }>(backendApiRoutes.auth.login, async (request, reply) => {
    try {
-    const result = await profileLifecycle.login(request.body, (payload) => server.jwt.sign(payload));
+    const result = await this.profileLifecycle.login(request.body, (payload) => server.jwt.sign(payload));
     if (result.status !== ResponseStatus.SUCCESS) {
      const response: ControllerResponse = { data: null, message: result.message };
      return reply.status(result.status).send(response);
@@ -37,7 +44,7 @@ export class AuthController extends Controller {
   // -- Register ------------------------------------------------------------------
   server.post<{ Body: RegisterProfileData }>(backendApiRoutes.auth.register, async (request, reply) => {
    try {
-    const result = await profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
+    const result = await this.profileLifecycle.register(request.body, (payload) => server.jwt.sign(payload));
     if (result.status !== ResponseStatus.CREATED) {
      const response: ControllerResponse = { data: null, message: result.message };
      return reply.status(result.status).send(response);
@@ -57,7 +64,7 @@ export class AuthController extends Controller {
    try {
     await request.jwtVerify();
     const payload = request.user as TokenPayload;
-    const result = await profileLifecycle.getCurrentProfile(payload.profileId);
+    const result = await this.profileLifecycle.getCurrentProfile(payload.profileId);
     if (result.status !== ResponseStatus.SUCCESS) {
      const response: ControllerResponse = { data: null, message: result.message };
      return reply.status(result.status).send(response);
