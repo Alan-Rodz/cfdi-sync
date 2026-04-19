@@ -86,8 +86,6 @@ export const addAuthRoutes = async (server: FastifyInstance, t = englishTranslat
     .insert({
      [profileTableColumns.email]: email,
      [profileTableColumns.id]: authProfile.user.id,
-     [profileTableColumns.name]: '',
-     [profileTableColumns.img_url]: ''
     })
     .select()
     .single();
@@ -106,7 +104,7 @@ export const addAuthRoutes = async (server: FastifyInstance, t = englishTranslat
   }
  });
 
- // -- Get Current User -----------------------------------------------------------
+ // -- Get Current Profile --------------------------------------------------------
  server.get(backendApiRoutes.auth.me, async (request, reply) => {
   try {
    await request.jwtVerify();
