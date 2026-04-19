@@ -1,4 +1,4 @@
-import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from '@mui/material';
+import { Button, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from '@mui/material';
 import { Link } from '@tanstack/react-router';
 import type { FC } from 'react';
 
@@ -28,6 +28,16 @@ export const AppBarProfileMenu: FC<Props> = ({ disclosure }) => {
  };
 
  // -- UI -------------------------------------------------------------------------
+ if (!isAuthenticated) {
+  return (
+   <Link to={frontendRoutes.nonAuthed.login.index}>
+    <Button startIcon={appIcons.login()} variant='outlined' size='small'>
+     {t('auth.login')}
+    </Button>
+   </Link>
+  );
+ }
+
  return (
   <>
    <IconButton onClick={(e) => disclosure.handleOpenMenu(e.currentTarget)}>
@@ -43,37 +53,26 @@ export const AppBarProfileMenu: FC<Props> = ({ disclosure }) => {
     sx={{ marginTop: '40px' }}
     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
    >
-    {
-     isAuthenticated && profile
-      ?
-      <MenuList sx={{ padding: 0 }}>
-       <Link to={frontendRoutes.authed.dashboard.index} style={{ textDecoration: 'none' }}>
-        <MenuItem onClick={disclosure.handleCloseMenu}>
-         <ListItemIcon>{appIcons.home()}</ListItemIcon>
-         <ListItemText sx={{ color: appColors.white, }}>Dashboard</ListItemText>
-        </MenuItem>
-       </Link>
-       <Link to={frontendRoutes.authed.dashboard.index} style={{ textDecoration: 'none' }}>
-        <MenuItem onClick={disclosure.handleCloseMenu}>
-         <ListItemIcon>{appIcons.profile()}</ListItemIcon>
-         <ListItemText sx={{ color: appColors.white }}>{t('common.my_profile')}</ListItemText>
-        </MenuItem>
-       </Link>
-       <MenuItem onClick={handleLogout}>
-        <ListItemIcon>{appIcons.logout()}</ListItemIcon>
-        <ListItemText sx={{ color: appColors.white }}>{t('auth.logout')}</ListItemText>
+    {profile && (
+     <MenuList sx={{ padding: 0 }}>
+      <Link to={frontendRoutes.authed.dashboard.index} style={{ textDecoration: 'none' }}>
+       <MenuItem onClick={disclosure.handleCloseMenu}>
+        <ListItemIcon>{appIcons.home()}</ListItemIcon>
+        <ListItemText sx={{ color: appColors.white }}>Dashboard</ListItemText>
        </MenuItem>
-      </MenuList>
-      :
-      <MenuList sx={{ padding: 0 }}>
-       <Link to={frontendRoutes.nonAuthed.login.index}>
-        <MenuItem onClick={disclosure.handleCloseMenu}>
-         <ListItemIcon>{appIcons.login()}</ListItemIcon>
-         <ListItemText sx={{ color: appColors.white }}>{t('auth.login')}</ListItemText>
-        </MenuItem>
-       </Link>
-      </MenuList>
-    }
+      </Link>
+      <Link to={frontendRoutes.authed.dashboard.index} style={{ textDecoration: 'none' }}>
+       <MenuItem onClick={disclosure.handleCloseMenu}>
+        <ListItemIcon>{appIcons.profile()}</ListItemIcon>
+        <ListItemText sx={{ color: appColors.white }}>{t('common.my_profile')}</ListItemText>
+       </MenuItem>
+      </Link>
+      <MenuItem onClick={handleLogout}>
+       <ListItemIcon>{appIcons.logout()}</ListItemIcon>
+       <ListItemText sx={{ color: appColors.white }}>{t('auth.logout')}</ListItemText>
+      </MenuItem>
+     </MenuList>
+    )}
    </Menu>
   </>
  );

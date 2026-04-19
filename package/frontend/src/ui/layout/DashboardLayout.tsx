@@ -1,5 +1,4 @@
 import { Box } from '@mui/material';
-import { useLocation } from '@tanstack/react-router';
 import type { FC, PropsWithChildren } from 'react';
 
 import { useDrawerDisclosure } from '../hook/useDrawerDisclosure';
@@ -9,17 +8,15 @@ import { Sidebar } from './Sidebar';
 
 // ********************************************************************************
 // == Component ===================================================================
-export const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
+export const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
  const drawerDisclosure = useDrawerDisclosure();
- const { pathname } = useLocation();
 
  // -- UI -------------------------------------------------------------------------
- const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
  return (
   <Box sx={{ display: 'flex', height: '100vh', width: '100%' }}>
-   {isDashboardRoute && <Sidebar drawerDisclosure={drawerDisclosure} />}
+   <Sidebar drawerDisclosure={drawerDisclosure} />
    <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column', overflow: 'hidden' }}>
-    <ApplicationBar drawerDisclosure={isDashboardRoute ? drawerDisclosure : undefined} />
+    <ApplicationBar drawerDisclosure={drawerDisclosure} />
     <Box sx={{ flex: 1, overflowY: 'auto', padding: '2em 1.5em' }}>
      {children}
     </Box>
