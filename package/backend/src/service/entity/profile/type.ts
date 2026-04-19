@@ -19,8 +19,6 @@ export type ProfileAuthPort = {
  signUpWithPassword(data: RegisterProfileData): Promise<ProfileAuthSignUpResult>;
 };
 
-export type ProfileRepositoryCreateInput = Pick<Profile, 'email' | 'id'>;
-
 export type ProfileRepositoryPort = {
  findProfileByEmail(email: Profile['email']): Promise<Profile | null>;
  findProfileById(profileId: Profile['id']): Promise<Profile | null>;

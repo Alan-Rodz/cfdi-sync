@@ -24,7 +24,7 @@ export class SupabaseProfileAuth implements ProfileAuthPort {
   const { data: authedProfile, error: authedProfileError } = await this.client.auth.signInWithPassword(data);
 
   if (authedProfileError) {
-   await this.safeLogError('#9f4b0a8d Supabase sign-in failed', authedProfileError);
+   await this.loggerPort?.safeLogError('#9f4b0a8d Supabase sign-in failed', authedProfileError);
   } /* else -- no sign-in provider error */
 
   return {
@@ -39,9 +39,9 @@ export class SupabaseProfileAuth implements ProfileAuthPort {
 
   if (authError || !authProfile.user) {
    if (authError) {
-    await this.safeLogError('#dd9bd457 Supabase sign-up failed', authError);
+    await this.loggerPort?.safeLogError('#dd9bd457 Supabase sign-up failed', authError);
    } else {
-    await this.safeLogError('#dc6b2f63 Supabase sign-up missing user', { data });
+    await this.loggerPort?.safeLogError('#dc6b2f63 Supabase sign-up missing user', { data });
    }
 
    return {
@@ -56,10 +56,5 @@ export class SupabaseProfileAuth implements ProfileAuthPort {
    profileId: authProfile.user.id,
    supabaseAccessToken: authProfile.session?.access_token ?? null,
   };
- }
-
- // -- Private --------------------------------------------------------------------
- private async safeLogError(message: string, error: unknown) {
-  await this.loggerPort?.safeLogError(message, error);
  }
 }

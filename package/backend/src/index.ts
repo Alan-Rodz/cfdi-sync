@@ -18,6 +18,7 @@ const server = fastify();
 await server.register(fastifyCors, { methods: [RequestMethod.DELETE, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH], origin: process.env.FRONTEND_URL! });
 await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 
+// == Custom Decoration ===========================================================
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 server.decorateRequest('authContext', null);
 server.decorate('authenticateWithSupabase', async (request, reply) => {
@@ -40,21 +41,13 @@ server.decorate('authenticateWithSupabase', async (request, reply) => {
  };
 });
 
-const loggerPort = new Logger(supaBaseClient, { scope: 'General' });
-const profileAuth = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));
-const profileRepositoryFactory = new SupabaseProfileRepositoryFactory(
- process.env.SUPABASE_URL!,
- process.env.SUPABASE_KEY!,
- new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' })
-);
-
 // == Setup =======================================================================
 const controllers = getControllers({
  auth: {
-  profileAuthPort: profileAuth,
-  profileRepositoryFactoryPort: profileRepositoryFactory,
+  profileAuthPort: new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' })),
+  profileRepositoryFactoryPort: new SupabaseProfileRepositoryFactory(new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' })),
  },
- loggerPort,
+ loggerPort: new Logger(supaBaseClient, { scope: 'General' }),
  t: englishTranslationFunction,
 });
 

@@ -12,21 +12,17 @@ export class SupabaseProfileRepositoryFactory implements ProfileRepositoryFactor
 
  // -- Attribute ------------------------------------------------------------------
  private readonly loggerPort: LoggerPort | null;
- private readonly supabaseKey: string;
- private readonly supabaseUrl: string;
 
  // -- Lifecycle ------------------------------------------------------------------
- constructor(supabaseUrl: string, supabaseKey: string, loggerPort: LoggerPort | null = null) {
+ constructor(loggerPort: LoggerPort | null = null) {
   this.loggerPort = loggerPort;
-  this.supabaseKey = supabaseKey;
-  this.supabaseUrl = supabaseUrl;
  }
 
  // -- Public ---------------------------------------------------------------------
  public forAuthenticatedRequest(supabaseAccessToken: string): ProfileRepositoryPort {
   const scopedClient: SupabaseClient<Database> = createClient<Database>(
-   this.supabaseUrl,
-   this.supabaseKey,
+   process.env.SUPABASE_URL!,
+   process.env.SUPABASE_KEY!,
    { global: { headers: { Authorization: `Bearer ${supabaseAccessToken}` } } }
   );
 
