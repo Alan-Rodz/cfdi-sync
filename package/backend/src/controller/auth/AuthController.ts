@@ -14,8 +14,6 @@ export class AuthController extends Controller {
  // -- Public ---------------------------------------------------------------------
  public async addRoutes(server: FastifyInstance) {
 
-  // -- Setup ---------------------------------------------------------------------
-  server.register(require('@fastify/jwt'), { secret: process.env.JWT_SECRET, sign: { expiresIn: '7d' } });
   const profileLifecycle = new ProfileLifecycle(this.client, this.t);
 
   // -- Login ---------------------------------------------------------------------

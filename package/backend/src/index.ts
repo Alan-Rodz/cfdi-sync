@@ -4,18 +4,17 @@ import fastify from 'fastify';
 
 import { Database, englishTranslationFunction } from 'common';
 
-import { AuthController } from './controller/auth/AuthController';
+import { getControllers } from './controller';
 
 // ********************************************************************************
 // == Constant ====================================================================
 const server = fastify();
 await server.register(fastifyCors, { origin: process.env.FRONTEND_URL! });
+await server.register(require('@fastify/jwt'), { secret: process.env.JWT_SECRET!, sign: { expiresIn: '7d' } });
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 // == Setup =======================================================================
-const controllers = [
- new AuthController({ client: supaBaseClient, t: englishTranslationFunction }),
-];
+const controllers = getControllers({ client: supaBaseClient, t: englishTranslationFunction });
 
 for (const controller of controllers) {
  await controller.addRoutes(server);
