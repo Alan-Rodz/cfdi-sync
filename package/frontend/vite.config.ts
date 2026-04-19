@@ -14,11 +14,7 @@ export default defineConfig({
    routesDirectory: './src/route',
   }),
 
-  react({
-   babel: {
-    plugins: [['babel-plugin-react-compiler']],
-   },
-  }),
+  react(),
  ],
 
  resolve: {

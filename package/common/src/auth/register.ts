@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { ApiResponse } from '../api';
-import { Profile } from '../entity/profile/type';
-import { englishTranslationFunction, LocaledTranslationFn } from '../locale/functionality';
+import type { ApiResponse } from '../api';
+import type { Profile } from '../entity/profile/type';
+import { englishTranslationFunction, type LocaledTranslationFn } from '../locale/functionality';
 import { getEmailSchema } from '../misc/email';
 import { getPasswordSchema } from '../misc/password';
 

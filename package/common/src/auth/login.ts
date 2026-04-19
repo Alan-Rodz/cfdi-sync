@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ApiResponse } from '../api';
-import { englishTranslationFunction, LocaledTranslationFn } from '../locale/functionality';
+import type { ApiResponse } from '../api';
+import { englishTranslationFunction, type LocaledTranslationFn } from '../locale/functionality';
 import { getEmailSchema } from '../misc/email';
 import { getPasswordSchema } from '../misc/password';
 
