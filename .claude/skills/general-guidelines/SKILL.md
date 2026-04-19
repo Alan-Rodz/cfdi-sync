@@ -184,9 +184,10 @@ Avoid redefining schema types locally if an equivalent exists in `common`.
 For backend files in `package/backend/src/**`:
 
 - Keep Fastify plugin registration (for example JWT, CORS) in bootstrap (`package/backend/src/index.ts`) instead of inside individual controllers.
+- Keep shared authenticated request decoration and auth preHandlers in bootstrap as well (for example `request.authContext`, `server.authenticateWithSupabase`).
 - Use controller registry composition (`package/backend/src/controller/index.ts`) to construct and register controller instances.
 - Prefer class-based controllers that extend the shared `Controller` base class and implement `addRoutes(server)`.
-- Keep `addRoutes` thin: map routes to private handler methods rather than embedding full control flow inline.
+- Keep `addRoutes` thin: map routes to private handler methods and shared `preHandler`s rather than embedding full control flow inline.
 - Construct/inject service dependencies in controller constructor, not in `addRoutes`.
 - Keep service logic in service classes and HTTP response mapping in controllers.
 
@@ -198,6 +199,14 @@ For backend services in `package/backend/src/**`, follow these boundaries:
 - Keep use case services depending on ports (`ProfileRepositoryPort`, `ProfileAuthPort`) instead of framework clients.
 - Keep concrete client usage (for example Supabase query/auth calls) inside adapter classes (for example `SupabaseProfileRepository`, `SupabaseProfileAuth`).
 - Keep app bootstrap (`package/backend/src/index.ts`) as the composition root where adapters are constructed and injected.
+
+For RLS-protected backend request flows:
+
+- Create the Supabase user-scoped client once in a shared Fastify auth preHandler.
+- Attach authenticated request state to a typed request decoration (for example `request.authContext`).
+- Pass the request-scoped Supabase client through controller -> lifecycle -> repository for protected operations.
+- Avoid repeating JWT verification, Supabase header parsing, or client construction in every protected controller handler.
+- Repository adapters may support both a scoped client and a raw token only when login/register flows genuinely need token-based fallback behavior.
 
 For controller dependencies:
 

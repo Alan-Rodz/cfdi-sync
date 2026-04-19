@@ -1,6 +1,6 @@
 ---
 name: backend-controllers
-description: Backend controller and composition conventions for this repo. Use this skill whenever creating or editing Fastify controllers/handlers in `package/backend/src/**`, especially `package/backend/src/controller/**` and backend bootstrap wiring. Apply it for class-based controller structure, feature-scoped dependency injection, controller registry composition, mandatory `ResponseStatus` usage, and predictable handler organization.
+description: Backend controller and composition conventions for this repo. Use this skill whenever creating or editing Fastify controllers/handlers in `package/backend/src/**`, especially `package/backend/src/controller/**` and backend bootstrap wiring. Apply it for class-based controller structure, feature-scoped dependency injection, controller registry composition, centralized Fastify auth preHandlers, request-scoped Supabase auth context, mandatory `ResponseStatus` usage, and predictable handler organization.
 ---
 
 # Backend Controllers
@@ -16,6 +16,7 @@ Use this skill for:
 - Controller classes in `package/backend/src/controller/**`.
 - Fastify route handlers using `request`/`reply` and JWT verification.
 - Backend bootstrap + controller registry wiring in `package/backend/src/index.ts` and `package/backend/src/controller/index.ts`.
+- Fastify request decoration and auth preHandler patterns such as `request.authContext` and `server.authenticateWithSupabase`.
 
 Do not use this skill by itself for shared schema, DB SQL, or frontend files.
 
@@ -40,6 +41,7 @@ Constructor conventions:
 Route registration conventions:
 
 - `addRoutes` should stay thin and map routes to handler methods.
+- Protected routes should prefer shared `preHandler` hooks registered on the Fastify instance instead of repeating auth extraction in each handler.
 - Route business control flow should live in private handler methods.
 - Reuse base controller helpers for mapping service results and unexpected errors.
 
@@ -144,12 +146,21 @@ if (errorCondition) { return reply.status(ResponseStatus.BAD_REQUEST).send({ dat
 
 For auth-like routes:
 
-- Use `request.jwtVerify()` for protected endpoints.
+- Register shared auth hooks in backend bootstrap and prefer route `preHandler` usage such as `server.authenticateWithSupabase` for protected endpoints.
+- Do not manually parse Supabase access token headers in each controller once a shared preHandler exists.
+- Read authenticated request state from shared request decorations such as `request.authContext`.
 - Build JWT payloads with stable field ordering.
 - Use the injected translation function for user-facing fallback messages.
 - Log caught errors with `logConsoleError` before returning fallback error responses.
 
 Do not register `@fastify/jwt` inside individual controllers. Register it once in backend bootstrap.
+
+For RLS-protected Supabase operations:
+
+- Build a request-scoped Supabase client once in the shared auth preHandler.
+- Store it on the request context (`request.authContext.supabaseClient`) for protected handlers.
+- Controllers should pass the scoped client into lifecycle/service methods rather than re-creating clients locally.
+- Repositories may still accept either a scoped client or raw token when login/register flows need token-based fallback, but protected request flows should prefer the shared scoped client.
 
 ## 10. Self-Check
 
@@ -158,12 +169,14 @@ Before finalizing backend controller edits, confirm:
 1. `ResponseStatus` is used for all explicit statuses.
 2. No raw status number literals are used in replies.
 3. Plugins (for example JWT) are registered in bootstrap, not per controller.
-4. Controllers extend the shared `Controller` base class.
-5. `addRoutes` is thin and mainly maps routes to handler methods.
-6. Service dependencies are created/injected in controller constructor, not in `addRoutes`.
-7. Import/order/object key ordering is stable and mostly alphabetical.
-8. Line wrapping is intentional; concise statements remain single-line.
-9. Error branches return early and keep nesting shallow.
-10. Message keys and response payload shape stay consistent.
-11. `ControllerDependencies` remains generic and does not include feature-specific ports.
-12. Controller registry dependencies are grouped by feature and mapped explicitly per controller.
+4. Protected routes prefer shared Fastify `preHandler` auth hooks over inline `jwtVerify` + header parsing.
+5. Controllers extend the shared `Controller` base class.
+6. `addRoutes` is thin and mainly maps routes to handler methods.
+7. Service dependencies are created/injected in controller constructor, not in `addRoutes`.
+8. Import/order/object key ordering is stable and mostly alphabetical.
+9. Line wrapping is intentional; concise statements remain single-line.
+10. Error branches return early and keep nesting shallow.
+11. Message keys and response payload shape stay consistent.
+12. `ControllerDependencies` remains generic and does not include feature-specific ports.
+13. Controller registry dependencies are grouped by feature and mapped explicitly per controller.
+14. RLS-protected handlers read from shared `request.authContext` rather than duplicating token-to-client wiring.
