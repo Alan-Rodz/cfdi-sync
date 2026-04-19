@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { webRouter } from '@/constant/route';
+import { frontendRoutes } from 'common';
 
 // ********************************************************************************
 // == Component ===================================================================
@@ -10,4 +10,4 @@ const DashboardPage = () =>
  </div>;
 
 // == Export ======================================================================
-export const Route = createFileRoute(`${webRouter.authed.dashboard.index}/`)({ component: DashboardPage });
+export const Route = createFileRoute(`${frontendRoutes.authed.dashboard.index}/`)({ component: DashboardPage });
