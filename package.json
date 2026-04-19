@@ -9,6 +9,7 @@
   "clean": "rm -rf node_modules package/*/node_modules package-lock.json",
   "dev:backend": "npm run dev --workspace=backend",
   "dev:frontend": "npm run dev --turbo --workspace=frontend",
+  "start:backend": "npm run start --workspace=backend",
   "typecheck:backend": "tsc --noEmit -p package/backend/tsconfig.json",
   "typecheck:frontend": "tsc -b package/frontend/tsconfig.json --noEmit",
   "typecheck": "npm run typecheck:backend && npm run typecheck:frontend"
