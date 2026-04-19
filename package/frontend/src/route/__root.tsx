@@ -18,10 +18,13 @@ const RootLayout = () => {
  return (
   <>
    <div>
-    <nav className='border-[#ccc] border-b p-4'>
+    <nav className='border-[#ccc] border-b p-4 flex gap-4 justify-end'>
      <Link to={frontendRoutes.nonAuthed.landing_page}><Button>Landing page</Button></Link>
-     <Link to={frontendRoutes.nonAuthed.login.index}><Button>Login</Button></Link>
-     {isAuthenticated && <Link to={frontendRoutes.nonAuthed.logout}><Button>Log out</Button></Link>}
+     {
+      isAuthenticated
+       ? <Link to={frontendRoutes.nonAuthed.logout}><Button>Log out</Button></Link>
+       : <Link to={frontendRoutes.nonAuthed.login.index}><Button>Login</Button></Link>
+     }
     </nav>
    </div>
    <Outlet />
