@@ -4,9 +4,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { frontendRoutes } from 'common';
 
-import { ensureProfileIs } from './guard';
-
 import { useAuth } from '@/ui/hook/useAuth';
+
+import { ensureProfileIs } from './guard';
 
 // ********************************************************************************
 // == Component ===================================================================
@@ -20,6 +20,7 @@ const LogoutPage = () => {
   navigate({ to: frontendRoutes.nonAuthed.landing_page });
  }, [logout, navigate]);
 
+ // -- UI -------------------------------------------------------------------------
  return null;
 };
 
