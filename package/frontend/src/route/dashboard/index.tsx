@@ -8,8 +8,8 @@ import { ensureProfileIs } from '../guard';
 // ********************************************************************************
 // == Component ===================================================================
 const DashboardPage = () =>
- <Box sx={{ p: 8 }}>
-  <Typography variant='h3'>Dashboard</Typography>
+ <Box sx={{ padding: '1em' }}>
+  <Typography>Dashboard</Typography>
  </Box>;
 
 // == Export ======================================================================

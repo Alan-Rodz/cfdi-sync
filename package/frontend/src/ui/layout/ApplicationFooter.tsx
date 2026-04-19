@@ -17,5 +17,5 @@ export const ApplicationFooter: FC = () =>
    textAlign: 'center',
   }}
  >
-  <Box>© {new Date().getFullYear()} {WEBSITE_NAME}.</Box>
+  <Box>© {new Date().getFullYear()} {WEBSITE_NAME}</Box>
  </Box>;
