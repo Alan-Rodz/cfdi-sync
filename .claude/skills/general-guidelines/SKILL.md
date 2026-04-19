@@ -202,16 +202,19 @@ For backend services in `package/backend/src/**`, follow these boundaries:
 
 For RLS-protected backend request flows:
 
-- Create the Supabase user-scoped client once in a shared Fastify auth preHandler.
-- Attach authenticated request state to a typed request decoration (for example `request.authContext`).
-- Pass the request-scoped Supabase client through controller -> lifecycle -> repository for protected operations.
-- Avoid repeating JWT verification, Supabase header parsing, or client construction in every protected controller handler.
-- Repository adapters may support both a scoped client and a raw token only when login/register flows genuinely need token-based fallback behavior.
+- Extract and attach only the `supabaseAccessToken` to the request context in a shared Fastify auth preHandler (not a full scoped Supabase client).
+- Keep `supabaseAccessToken` in typed request decoration (for example `request.authContext`); controllers will use it to resolve a repository.
+- Define `*RepositoryFactoryPort` types (for example `ProfileRepositoryFactoryPort`) that create request-scoped repositories from a token.
+- Inject the factory into feature-specific controller dependencies and call `factory.forAuthenticatedRequest(token)` inside protected handlers.
+- Pass the returned repository port into lifecycle/service methods, not Supabase clients or tokens.
+- Repository adapters receive only a fully-constructed, ready-to-use Supabase client; they do not handle client scoping or token-to-client translation.
+- This preserves ports-and-adapters boundaries: use case services depend on `*RepositoryPort` and know nothing about Supabase or authentication mechanics.
 
 For controller dependencies:
 
 - Keep `ControllerDependencies` generic and cross-controller only (for example translation function `t` and shared `loggerPort`).
-- Define feature-specific controller dependency types (for example `AuthControllerDependencies`) that extend base dependencies.
+- Define feature-specific controller dependency types (for example `AuthControllerDependencies`) that extend base dependencies and include feature-specific ports and factories.
+- Include `*RepositoryFactoryPort` types (for example `profileRepositoryFactoryPort`) in feature-specific controller dependencies to enable request-scoped repository resolution.
 - In controller registry (`package/backend/src/controller/index.ts`), use a registry dependency shape with feature sections (for example `auth`) and map each section to its controller.
 
 ## 11. Additional Patterns To Preserve
@@ -241,7 +244,8 @@ Before finalizing edits, confirm:
 
 - **Port**: A feature-level interface/contract that defines what the application needs (for example `ProfileRepositoryPort`) without binding to a specific infrastructure client.
 - **Adapter**: A concrete implementation of a port using a specific technology (for example `SupabaseProfileRepository`, `SupabaseProfileAuth`).
-- **Composition Root**: The app bootstrap location where adapters are instantiated and injected into services/controllers (for example `package/backend/src/index.ts`).
+- **Factory Port**: A port that creates request-scoped instances of other ports (for example `ProfileRepositoryFactoryPort`), enabling per-request client scoping without passing clients through service layers.
+- **Composition Root**: The app bootstrap location where adapters and factories are instantiated and injected into services/controllers (for example `package/backend/src/index.ts`).
 - **Feature Dependency Scope**: The rule that feature-specific dependencies belong to feature controller types (`AuthControllerDependencies`) and not to generic shared types (`ControllerDependencies`).
 
 ## Examples

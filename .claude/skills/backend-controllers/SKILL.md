@@ -155,12 +155,14 @@ For auth-like routes:
 
 Do not register `@fastify/jwt` inside individual controllers. Register it once in backend bootstrap.
 
-For RLS-protected Supabase operations:
+For RLS-protected Supabase operations (factory pattern):
 
-- Build a request-scoped Supabase client once in the shared auth preHandler.
-- Store it on the request context (`request.authContext.supabaseClient`) for protected handlers.
-- Controllers should pass the scoped client into lifecycle/service methods rather than re-creating clients locally.
-- Repositories may still accept either a scoped client or raw token when login/register flows need token-based fallback, but protected request flows should prefer the shared scoped client.
+- Attach only the `supabaseAccessToken` to the request context in the shared auth preHandler (not a full scoped Supabase client).
+- Inject a `*RepositoryFactoryPort` (for example `ProfileRepositoryFactoryPort`) into feature-specific controller dependencies.
+- Controllers call `factory.forAuthenticatedRequest(authContext.supabaseAccessToken)` to get a request-scoped repository instance.
+- Pass the repository instance into lifecycle/service methods, not Supabase clients or tokens.
+- The factory handles Supabase client scoping internally; repositories receive only a ready-to-use client.
+- This keeps use-case services free of infrastructure client knowledge and preserves strong ports-and-adapters boundaries.
 
 ## 10. Self-Check
 
@@ -179,4 +181,6 @@ Before finalizing backend controller edits, confirm:
 11. Message keys and response payload shape stay consistent.
 12. `ControllerDependencies` remains generic and does not include feature-specific ports.
 13. Controller registry dependencies are grouped by feature and mapped explicitly per controller.
-14. RLS-protected handlers read from shared `request.authContext` rather than duplicating token-to-client wiring.
+14. Protected handlers read from shared `request.authContext` (which contains `supabaseAccessToken` but not a full Supabase client).
+15. Controllers inject and use `*RepositoryFactoryPort` to create request-scoped repository instances for protected operations.
+16. Services receive `*RepositoryPort` instances (created by the factory), not Supabase clients or tokens.
