@@ -25,9 +25,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const initAuth = async () => {
    try {
     const storedToken = authService.getToken();
+    const storedSupabaseAccessToken = authService.getSupabaseAccessToken();
     const storedProfile = authService.getProfile();
 
-    if (storedToken && storedProfile) {
+    if (storedSupabaseAccessToken && storedToken && storedProfile) {
      setToken(storedToken);
      setProfile(storedProfile);
      setIsAuthenticated(true);
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
    try {
     const response = await authService.login(data);
-    if (response.data && response.token) {
+    if (response.data && response.supabaseAccessToken && response.token) {
      setProfile(response.data);
      setToken(response.token);
      setIsAuthenticated(true);
@@ -86,7 +87,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
    try {
     const response = await authService.register(data);
-    if (response.data && response.token) {
+    if (response.data && response.supabaseAccessToken && response.token) {
      setProfile(response.data);
      setToken(response.token);
      setIsAuthenticated(true);

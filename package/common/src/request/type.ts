@@ -18,6 +18,7 @@ export enum RequestHeader {
  Origin = 'Origin',
  Protocol = 'X-Forwarded-Proto',
  STSignature = 'Stripe-Signature',
+ SupabaseAccessToken = 'X-Supabase-Access-Token',
  UserAgent = 'User-Agent',
 }
 

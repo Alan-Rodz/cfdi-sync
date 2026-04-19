@@ -9,6 +9,7 @@ export type ProfileResponse = ApiResponse<Profile>;
 // == Constant ====================================================================
 const API_BASE = import.meta.env.VITE_BACKEND_URL!;
 const PROFILE_KEY = `${WEBSITE_NAME}-authProfile`;
+const SUPABASE_ACCESS_TOKEN_KEY = `${WEBSITE_NAME}-supabaseAccessToken`;
 const TOKEN_KEY = `${WEBSITE_NAME}-authToken`;
 
 // == Service =====================================================================
@@ -44,7 +45,8 @@ export const authService = {
   } /* else -- successful request */
 
   const answer = await response.json() as ProfileResponse;
-  if (answer.data && answer.token) {
+  if (answer.data && answer.supabaseAccessToken && answer.token) {
+   authService.saveSupabaseAccessToken(answer.supabaseAccessToken);
    authService.saveToken(answer.token);
    authService.saveProfile(answer.data);
   } /* else -- no data or no token */
@@ -53,6 +55,7 @@ export const authService = {
  },
 
  logout: (): void => {
+  authService.clearSupabaseAccessToken();
   authService.clearToken();
   authService.clearProfile();
  },
@@ -71,7 +74,8 @@ export const authService = {
   } /* else -- successful request */
 
   const json = await response.json() as ProfileResponse;
-  if (json.data && json.token) {
+  if (json.data && json.supabaseAccessToken && json.token) {
+   authService.saveSupabaseAccessToken(json.supabaseAccessToken);
    authService.saveToken(json.token);
    authService.saveProfile(json.data);
   } /* else -- no data or no token */
@@ -100,10 +104,20 @@ export const authService = {
   return json;
  },
 
- // -- Token ----------------------------------------------------------------------
- clearToken: (): void => localStorage.removeItem(TOKEN_KEY),
- getToken: (): string | null => localStorage.getItem(TOKEN_KEY),
- saveToken: (token: string): void => localStorage.setItem(TOKEN_KEY, token),
+ // -- Authenticated Request ------------------------------------------------------
+ fetchWithAuth: async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
+  const supabaseAccessToken = authService.getSupabaseAccessToken();
+  const token = authService.getToken();
+
+  return fetch(`${API_BASE}${endpoint}`, {
+   ...options,
+   headers: {
+    ...options.headers,
+    ...(supabaseAccessToken && { [RequestHeader.SupabaseAccessToken]: supabaseAccessToken }),
+    ...(token && { [RequestHeader.Authorization]: `Bearer ${token}` }),
+   }
+  });
+ },
 
  // -- Profile --------------------------------------------------------------------
  clearProfile: (): void => localStorage.removeItem(PROFILE_KEY),
@@ -113,16 +127,13 @@ export const authService = {
  },
  saveProfile: (profile: Profile): void => localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)),
 
- // -- Authenticated Request ------------------------------------------------------
- fetchWithAuth: async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
-  const token = authService.getToken();
+ // -- Supabase Access Token ------------------------------------------------------
+ clearSupabaseAccessToken: (): void => localStorage.removeItem(SUPABASE_ACCESS_TOKEN_KEY),
+ getSupabaseAccessToken: (): string | null => localStorage.getItem(SUPABASE_ACCESS_TOKEN_KEY),
+ saveSupabaseAccessToken: (supabaseAccessToken: string): void => localStorage.setItem(SUPABASE_ACCESS_TOKEN_KEY, supabaseAccessToken),
 
-  return fetch(`${API_BASE}${endpoint}`, {
-   ...options,
-   headers: {
-    ...options.headers,
-    ...(token && { 'Authorization': `Bearer ${token}` })
-   }
-  });
- }
+ // -- Token ----------------------------------------------------------------------
+ clearToken: (): void => localStorage.removeItem(TOKEN_KEY),
+ getToken: (): string | null => localStorage.getItem(TOKEN_KEY),
+ saveToken: (token: string): void => localStorage.setItem(TOKEN_KEY, token),
 };

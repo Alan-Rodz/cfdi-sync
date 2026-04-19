@@ -3,6 +3,7 @@
 export type ApiResponse<T = null> = {
  data?: T;
  message: string;
+ supabaseAccessToken?: string;
  token?: string;
 }
 

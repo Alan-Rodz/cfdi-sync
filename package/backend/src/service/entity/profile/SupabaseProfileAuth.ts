@@ -27,7 +27,11 @@ export class SupabaseProfileAuth implements ProfileAuthPort {
    await this.safeLogError('#9f4b0a8d Supabase sign-in failed', authedProfileError);
   } /* else -- no sign-in provider error */
 
-  return { authenticated: !authedProfileError && !!authedProfile };
+  return {
+   authenticated: !authedProfileError && !!authedProfile?.user,
+   profileId: authedProfile?.user?.id ?? null,
+   supabaseAccessToken: authedProfile?.session?.access_token ?? null,
+  };
  }
 
  public async signUpWithPassword(data: RegisterProfileData): Promise<ProfileAuthSignUpResult> {
@@ -43,12 +47,14 @@ export class SupabaseProfileAuth implements ProfileAuthPort {
    return {
     errorMessage: authError?.message || null,
     profileId: null,
+    supabaseAccessToken: null,
    };
   } /* else -- user created successfully */
 
   return {
    errorMessage: null,
    profileId: authProfile.user.id,
+   supabaseAccessToken: authProfile.session?.access_token ?? null,
   };
  }
 

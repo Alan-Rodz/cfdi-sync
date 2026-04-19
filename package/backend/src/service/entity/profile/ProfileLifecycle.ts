@@ -35,54 +35,40 @@ export class ProfileLifecycle {
   const credentials = { email, password };
 
   const signInResult = await this.profileAuthPort.signInWithPassword(credentials);
-  if (!signInResult.authenticated) {
+  if (!signInResult.authenticated || !signInResult.profileId || !signInResult.supabaseAccessToken) {
    return { data: null, message: this.t('auth.invalid_credentials'), status: ResponseStatus.UNAUTHORIZED };
   } /* else -- authentication successful */
 
-  const profile = await this.profileRepositoryPort.findProfileByEmail(email);
+  const profile = await this.profileRepositoryPort.findProfileById(signInResult.profileId, signInResult.supabaseAccessToken);
   if (!profile) {
    return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
   } /* else -- profile found */
 
   const token = createToken({ email: profile.email, profileId: profile.id });
   await this.safeLogInfo('#4649f23e Login successful', { profileId: profile.id });
-  return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS, token };
+  return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS, supabaseAccessToken: signInResult.supabaseAccessToken, token };
  }
 
  public async register(data: RegisterProfileData, createToken: CreateTokenFn): Promise<ServiceResult<Profile>> {
-  const { email } = data;
-  let existing = false;
-
-  try {
-   existing = await this.profileRepositoryPort.isEmailRegistered(email);
-  } catch (error) {
-   await this.safeLogError('#58a94e76 Failed to check email before registration', error);
-   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
-  }
-
-  if (existing) {
-   return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.CONFLICT };
-  } /* else -- profile doesn't exist yet */
-
   const signUpResult = await this.profileAuthPort.signUpWithPassword(data);
-  if (!signUpResult.profileId) {
+  if (!signUpResult.profileId || !signUpResult.supabaseAccessToken) {
    return { data: null, message: signUpResult.errorMessage || this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
   } /* else -- user created successfully */
 
-  const profile = await this.profileRepositoryPort.findProfileById(signUpResult.profileId);
+  const profile = await this.profileRepositoryPort.findProfileById(signUpResult.profileId, signUpResult.supabaseAccessToken);
   if (!profile) {
    return { data: null, message: this.t('auth.registration_failed'), status: ResponseStatus.BAD_REQUEST };
   } /* else -- profile created successfully */
 
   const token = createToken({ email: profile.email, profileId: profile.id });
-  return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.CREATED, token };
+  return { data: profile, message: this.t('auth.registration_successful'), status: ResponseStatus.CREATED, supabaseAccessToken: signUpResult.supabaseAccessToken, token };
  }
 
- public async getCurrentProfile(profileId: Profile['id']): Promise<ServiceResult<Profile>> {
+ public async getCurrentProfile(profileId: Profile['id'], supabaseAccessToken: string): Promise<ServiceResult<Profile>> {
   let profile: Profile | null = null;
 
   try {
-   profile = await this.profileRepositoryPort.findProfileById(profileId);
+  profile = await this.profileRepositoryPort.findProfileById(profileId, supabaseAccessToken);
   } catch (error) {
    await this.safeLogError('#f96251d3 Failed to fetch current profile', error);
    return { data: null, message: this.t('auth.profile_not_found'), status: ResponseStatus.NOT_FOUND };
@@ -95,7 +81,7 @@ export class ProfileLifecycle {
   return { data: profile, message: this.t('auth.login_successful'), status: ResponseStatus.SUCCESS };
  }
 
- public async patchProfileName(profileId: Profile['id'], name: Profile['name']): Promise<ServiceResult<Profile>> {
+ public async patchProfileName(profileId: Profile['id'], name: Profile['name'], supabaseAccessToken: string): Promise<ServiceResult<Profile>> {
   if (!name.trim()) {
    this.loggerPort?.info(`#1964cbf3 Invalid profile name provided ${profileId} - ${name}`);
    return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };
@@ -103,7 +89,7 @@ export class ProfileLifecycle {
 
   let profile: Profile | null = null;
   try {
-   profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim());
+   profile = await this.profileRepositoryPort.updateProfileName(profileId, name.trim(), supabaseAccessToken);
   } catch (error) {
    await this.safeLogError('#5afe86f3 Failed to patch profile name', error);
    return { data: null, message: this.t('entity.profile.update_profile_failed'), status: ResponseStatus.BAD_REQUEST };

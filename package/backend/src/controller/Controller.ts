@@ -22,7 +22,7 @@ export abstract class Controller {
 
  // -- Protected ------------------------------------------------------------------
  protected createControllerResponse<T>(result: ServiceResult<T>): ControllerResponse<T> {
-  return { data: result.data, message: result.message, token: result.token };
+  return { data: result.data, message: result.message, supabaseAccessToken: result.supabaseAccessToken, token: result.token };
  }
 
  protected sendServiceResult<T>(reply: FastifyReply, result: ServiceResult<T>, successStatuses: ResponseStatus[] = [ResponseStatus.SUCCESS]) {

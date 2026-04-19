@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, ResponseStatus } from 'common';
+import { backendApiRoutes, LoginData, PatchProfileNameData, RegisterProfileData, RequestHeader, ResponseStatus } from 'common';
 
 import { ProfileLifecycle } from '../../service/entity/profile/ProfileLifecycle';
 
@@ -28,6 +28,20 @@ export class AuthController extends Controller {
  }
 
  // -- Handler --------------------------------------------------------------------
+ private getSupabaseAccessToken(request: FastifyRequest): string | null {
+  const header = request.headers[RequestHeader.SupabaseAccessToken.toLowerCase()];
+
+  if (typeof header === 'string' && header.trim()) {
+   return header.trim();
+  } /* else -- invalid header format */
+
+  if (Array.isArray(header) && header[0]?.trim()) {
+   return header[0].trim();
+  } /* else -- invalid array header format */
+
+  return null;
+ }
+
  private async handleLogin(server: FastifyInstance, request: FastifyRequest<{ Body: LoginData }>, reply: FastifyReply) {
   try {
    const result = await this.profileLifecycle.login(request.body, (payload) => server.jwt.sign(payload));
@@ -41,7 +55,12 @@ export class AuthController extends Controller {
   try {
    await request.jwtVerify();
    const payload = request.user as TokenPayload;
-   const result = await this.profileLifecycle.getCurrentProfile(payload.profileId);
+   const supabaseAccessToken = this.getSupabaseAccessToken(request);
+   if (!supabaseAccessToken) {
+    return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
+   } /* else -- supabase token available */
+
+   const result = await this.profileLifecycle.getCurrentProfile(payload.profileId, supabaseAccessToken);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#6bdb681d', 'auth.profile_not_found', ResponseStatus.UNAUTHORIZED);
@@ -52,7 +71,12 @@ export class AuthController extends Controller {
   try {
    await request.jwtVerify();
    const payload = request.user as TokenPayload;
-   const result = await this.profileLifecycle.patchProfileName(payload.profileId, request.body.name);
+   const supabaseAccessToken = this.getSupabaseAccessToken(request);
+   if (!supabaseAccessToken) {
+    return reply.status(ResponseStatus.UNAUTHORIZED).send({ data: null, message: this.t('auth.invalid_credentials') });
+   } /* else -- supabase token available */
+
+   const result = await this.profileLifecycle.patchProfileName(payload.profileId, request.body.name, supabaseAccessToken);
    return this.sendServiceResult(reply, result);
   } catch (error) {
    return this.sendUnexpectedError(reply, error, '#a8cf9328', 'entity.profile.update_profile_failed', ResponseStatus.UNAUTHORIZED);
