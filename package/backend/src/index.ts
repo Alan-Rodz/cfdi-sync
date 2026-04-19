@@ -18,8 +18,8 @@ await server.register(fastifyJwt, { secret: process.env.JWT_SECRET!, sign: { exp
 const supaBaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
 const loggerPort = new Logger(supaBaseClient, { scope: 'General' });
-const profileAuthPort = new SupabaseProfileAuth(supaBaseClient);
-const profileRepositoryPort = new SupabaseProfileRepository(supaBaseClient);
+const profileAuthPort = new SupabaseProfileAuth(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileAuth' }));
+const profileRepositoryPort = new SupabaseProfileRepository(supaBaseClient, new Logger(supaBaseClient, { scope: 'SupabaseProfileRepository' }));
 
 // == Setup =======================================================================
 const controllers = getControllers({
